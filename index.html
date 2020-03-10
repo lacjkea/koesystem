@@ -1,128 +1,167 @@
 <!DOCTYPE html>
 <html lang="">
-
-<head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title></title>
 
-    <link href="https://fonts.googleapis.com/css?family=Roboto&display=swap" rel="stylesheet">
+    <link
+      href="https://fonts.googleapis.com/css?family=Roboto&display=swap"
+      rel="stylesheet"
+    />
     <link rel="stylesheet" type="text/css" href="style.css" />
-</head>
+  </head>
 
-<body>
+  <body>
     <div id="popupScreen" class="hide">
-        <div id="popupScreenContent">
-            <div class="close"><img id="closePopup" src="icons/close.svg" alt="close"></div>
-            <div id="add" class="hide">
-                <caption class='rg-header'>
-                    <p class='rg-hed'>Opret feedback/vejledningsspørgsmål</p>
-
-
-
-                    Navn:<br>
-                    <input type="text" name="name" value=""><br>
-                    Problem overskrift:<br>
-                    <input type="text" name="problem_short" value=""><br>
-                    Evt. længere beskrivelse af problemet:<br>
-                    <textarea rows="4" cols="50" name="problem_long"></textarea><br>
-                    <br>
-
-
-
-                    <span class='rg-dek'> <button id="addProblem" class="myButton">Tilføj</button></span>
-                </caption>
-            </div>
-            <div id="delete" class="hide">
-                <caption class='rg-header'>
-                    <p class='rg-hed'>Slet feedback/vejledningsspørgsmål</p>
-
-
-
-                    Løst af :<br>
-                    <div class="solved_by">
-                        <div class="select">
-                            <select name="solved_by" id="solved_by">
-                                <option value="1" selected="selected">Happy</option>
-                                <option value="2">Great</option>
-                                <option value="3">Nice Solution</option>
-                                <option value="4">Awesome</option>
-                            </select>
-                        </div>
-                    </div>
-                    <br>
-
-
-
-                    <span class='rg-dek'> <button id="addProblem" class="myButton warning">Fjern</button></span>
-                </caption>
-            </div>
-            <div id="readmore" class="hide">
-                <caption class='rg-header'>
-                    <p class='rg-hed'>Detaljer ang. feedback/vejledningsspørgsmål</p>
-                    <p>Lorem ipsum atione ex ea voluptatibus minima alias est? Lorem ipsum dolor sit amet, consectetur adipisicing elit. Voluptatibus accusamus inventore, voluptas fugiat, id perspiciatis nulla, impedit error est neque consequatur repellat nisi quae, tenetur velit consectetur iste labore optio!</p>
-
-
-
-
-
-
-
-                </caption>
-            </div>
+      <div id="popupScreenContent">
+        <div class="close">
+          <img id="closePopup" src="icons/close.svg" alt="close" />
         </div>
+
+        <div id="add" class="hide">
+          <caption class="rg-header">
+            <p class="rg-hed">Opret feedback/vejledningsspørgsmål</p>
+
+            Navn:<br />
+            <input type="text" name="name" value="" /><br />
+            Problem overskrift:<br />
+            <input type="text" name="problem_short" value="" /><br />
+            Evt. længere beskrivelse af problemet:<br />
+            <textarea rows="4" cols="50" name="problem_long"></textarea
+            ><br />
+            <br />
+
+            <span class="rg-dek">
+              <button id="addProblem" class="myButton">Tilføj</button></span
+            >
+          </caption>
+        </div>
+
+        <div id="delete" class="hide">
+          <caption class="rg-header">
+            <p class="rg-hed">Ret feedback/vejledningsspørgsmål</p>
+
+            hent spørgsmål fra køen...<br /><br />
+
+            <div class="solved_by">
+              <div class="select">
+                <select id="cars">
+                  <option value="John">John</option>
+                  <option value="Birthe">Birthe</option>
+                  <option value="Hans">Hans</option>
+                  <option value="Ole" selected>Ole</option>
+                </select>
+              </div>
+            </div>
+            <br />
+
+            ...overtager min plads i køen.
+            <br /><br />
+            Navn:<br />
+            <input type="text" name="name" value="" /><br />
+            Nyt problem overskrift:<br />
+            <input type="text" name="problem_short" value="" /><br />
+            Evt. længere beskrivelse af problemet:<br />
+            <textarea rows="4" cols="50" name="problem_long"></textarea
+            ><br />
+            <br />
+
+            <div class="buttonBox">
+              <span class="rg-dek">
+                <button id="addProblem" class="myButton warning">
+                  Fjern fra køen
+                </button></span
+              >
+
+              <span class="rg-dek">
+                <button id="addProblem" class="myButton">
+                  Opdater problem
+                </button></span
+              >
+            </div>
+          </caption>
+        </div>
+
+        <div id="readmore" class="hide">
+          <caption class="rg-header">
+            <p class="rg-hed">Detaljer ang. feedback/vejledningsspørgsmål</p>
+            <p>
+              Lorem ipsum atione ex ea voluptatibus minima alias est? Lorem
+              ipsum dolor sit amet, consectetur adipisicing elit. Voluptatibus
+              accusamus inventore, voluptas fugiat, id perspiciatis nulla,
+              impedit error est neque consequatur repellat nisi quae, tenetur
+              velit consectetur iste labore optio!
+            </p>
+          </caption>
+        </div>
+      </div>
     </div>
-    <div class='rg-container'>
-        <table class='rg-table zebra' summary='Hed'>
-            <caption class='rg-header'>
-                <span class='rg-hed'>Feedback/Vejledningskø</span>
-                <span class='rg-dek'> <button id="addToQue" class="myButton">Tilføj</button></span>
-            </caption>
+    <div class="rg-container">
+      <table class="rg-table zebra" summary="Hed">
+        <caption class="rg-header">
+          <span class="rg-hed">Feedback/Vejledningskø</span>
+          <span class="rg-dek">
+            <button id="addToQue" class="myButton">Tilføj</button></span
+          >
+        </caption>
 
-            <thead>
-                <tr>
-                    <th class='text '>Navn</th>
-                    <th class='text '>Problem</th>
-                    <th class='text '>Tid i kø</th>
-                    <th class='text '>Detaljer</th>
-                    <th class='text '>Fjern</th>
-                </tr>
-            </thead>
+        <thead>
+          <tr>
+            <th class="text ">Navn</th>
+            <th class="text ">Problem</th>
+            <th class="text ">Tid i kø</th>
+            <th class="text ">Samme problem</th>
+            <th class="text ">Fjern</th>
+          </tr>
+        </thead>
 
-            <tbody>
+        <tbody>
+          <tr class="">
+            <td class="text " data-title="Navn">peter Ulf Jørgensen</td>
+            <td class="text " data-title="Problem">
+              Lorem ipsum atione ex ea voluptatibus minima alias est?
+            </td>
+            <td class="text " data-title="Tid i kø">00:00:14</td>
+            <td class="text " data-title="Detaljer">
+              <button class="myButton" id="readmore_1">Samme problem</button>
+            </td>
 
-                <tr class=''>
-                    <td class='text ' data-title='Navn'>peter Ulf Jørgensen</td>
-                    <td class='text ' data-title='Problem'>Lorem ipsum atione ex ea voluptatibus minima alias est?</td>
-                    <td class='text ' data-title='Tid i kø'>00:00:14</td>
-                    <td class='text ' data-title='Detaljer'><button class="myButton" id="readmore_1">Samme problem</button></td>
+            <td class="text " data-title="Fjern">
+              <button id="deleteList_1" class="myButton warning">
+                Opdater/Fjern
+              </button>
+            </td>
+          </tr>
 
-                    <td class='text ' data-title='Fjern'><button id="deleteList_1" class="myButton warning">Fjern</button></td>
-                </tr>
+          <tr class="">
+            <td class="text " data-title="Navn">paul</td>
+            <td class="text " data-title="Problem">Tekst</td>
+            <td class="text " data-title="Tid i kø">00:00:14</td>
+            <td class="text " data-title="Detaljer">
+              <button class="myButton">Samme problem</button>
+            </td>
 
+            <td class="text " data-title="Fjern">
+              <button class="myButton warning">Fjern</button>
+            </td>
+          </tr>
 
-                <tr class=''>
-                    <td class='text ' data-title='Navn'>paul</td>
-                    <td class='text ' data-title='Problem'>Tekst</td>
-                    <td class='text ' data-title='Tid i kø'>00:00:14</td>
-                    <td class='text ' data-title='Detaljer'><button class="myButton">Samme problem</button></td>
+          <tr class="">
+            <td class="text " data-title="Navn">mary</td>
+            <td class="text " data-title="Problem">Tekst</td>
+            <td class="text " data-title="Tid i kø">00:00:14</td>
+            <td class="text " data-title="Detaljer">
+              <button class="myButton">Samme problem</button>
+            </td>
 
-                    <td class='text ' data-title='Fjern'><button class="myButton warning">Fjern</button></td>
-                </tr>
-
-
-                <tr class=''>
-                    <td class='text ' data-title='Navn'>mary</td>
-                    <td class='text ' data-title='Problem'>Tekst</td>
-                    <td class='text ' data-title='Tid i kø'>00:00:14</td>
-                    <td class='text ' data-title='Detaljer'><button class="myButton">Samme problem</button></td>
-
-                    <td class='text ' data-title='Fjern'><button class="myButton warning">Fjern</button></td>
-                </tr>
-
-            </tbody>
-        </table>
-
+            <td class="text " data-title="Fjern">
+              <button class="myButton warning">Fjern</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
     </div>
     <script src="script.js"></script>
-</body></html>
+  </body>
+</html>
