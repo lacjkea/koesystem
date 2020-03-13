@@ -58,10 +58,11 @@ textarea {
 
 #popupScreen {
   width: 100%;
-  height: 100vh;
+  height: 100%;
   background-color: rgba(129, 129, 129, 0.5);
 
-  position: absolute;
+  position: fixed;
+  top: 0;
 }
 
 .hide {
@@ -69,10 +70,11 @@ textarea {
 }
 
 #popupScreenContent {
+  /* position: absolute; */
   padding: 20px;
   max-width: 600px;
   height: 600px;
-  margin: 10% auto;
+  margin: 5% auto;
 
   background-color: white;
 }
@@ -217,6 +219,7 @@ td.number {
 
 .buttonBox span {
   flex-basis: 150px;
+  align-self: center;
 }
 
 /* media queries */

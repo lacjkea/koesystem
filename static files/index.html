@@ -40,61 +40,42 @@
 
         <div id="delete" class="hide">
           <caption class="rg-header">
-            <div class="buttonBox">
-              <p class="rg-hed">
-                Problemet løst uden hjælp fra studerende
-              </p>
-              <span class="rg-dek">
-                <button id="removeProblem" class="myButton warning">
-                  Fjern fra køen
-                </button></span
-              >
-            </div>
-            <p class="rg-hed">
-              Jeg fik hjælp af:
-            </p>
+            <p class="rg-hed">Ret feedback/vejledningsspørgsmål</p>
+
+            hent spørgsmål fra køen...<br /><br />
 
             <div class="solved_by">
               <div class="select">
                 <select id="selections">
-                  <option value=""
-                    >Nedenstående spm. får min plads. Hent evt existerende spm.
-                    her...
-                  </option>
-
                   <template id="solved_by">
                     <option value="Ole">Ole</option>
                   </template>
                 </select>
               </div>
             </div>
-
             <br />
-            <!-- 
-            ...overtager min plads i køen. -->
 
+            ...overtager min plads i køen.
+            <br /><br />
             Navn:<br />
-            <input type="text" name="name" data-content="name" /><br />
+            <input type="text" name="name" value="" /><br />
             Nyt problem overskrift:<br />
-            <input
-              type="text"
-              name="problem_short"
-              data-content="problem_short"
-            /><br />
+            <input type="text" name="problem_short" value="" /><br />
             Evt. længere beskrivelse af problemet:<br />
-            <textarea
-              rows="4"
-              cols="50"
-              name="problem_long"
-              data-content="problem_long"
-            ></textarea
+            <textarea rows="4" cols="50" name="problem_long"></textarea
             ><br />
             <br />
 
             <div class="buttonBox">
               <span class="rg-dek">
-                <button id="updateProblem" class="myButton">
-                  Får pladsen i køen
+                <button id="addProblem" class="myButton warning">
+                  Fjern fra køen
+                </button></span
+              >
+
+              <span class="rg-dek">
+                <button id="addProblem" class="myButton">
+                  Opdater problem
                 </button></span
               >
             </div>
@@ -141,37 +122,43 @@
               <button id="addToQue" class="myButton">Tilføj</button>
             </td>
           </tr>
+          <tr class="">
+            <td class="text " data-title="Navn">peter Ulf Jørgensen</td>
+            <td class="text " data-title="Problem">
+              Lorem ipsum atione ex ea voluptatibus minima alias est?
+            </td>
+            <td class="text " data-title="Tid i kø">00:00:14</td>
 
-          <template id="question">
-            <tr data-content="id">
-              <td class="text " data-title="Navn" data-content="name">
-                FullName
-              </td>
-              <td
-                class="text "
-                data-title="Problem"
-                data-content="problem_short"
-              >
-                Tekst
-              </td>
-              <td class="text " data-title="Tid i kø" data-content="timeInQue">
-                00:00:00
-              </td>
+            <td class="text " data-title=" Opdater/Fjern">
+              <button id="deleteList_1" class="myButton warning">
+                Opdater/Fjern
+              </button>
+            </td>
+          </tr>
 
-              <td class="text" data-title="Opdater/Fjern">
-                <button
-                  data-content="deleteList"
-                  class="deleteList_1 myButton warning"
-                >
-                  Opdater/Fjern
-                </button>
-              </td>
-            </tr>
-          </template>
+          <tr class="">
+            <td class="text " data-title="Navn">paul</td>
+            <td class="text " data-title="Problem">Tekst</td>
+            <td class="text " data-title="Tid i kø">00:00:14</td>
+
+            <td class="text " data-title="Fjern">
+              <button class="myButton warning">Fjern</button>
+            </td>
+          </tr>
+
+          <tr class="">
+            <td class="text " data-title="Navn">mary</td>
+            <td class="text " data-title="Problem">Tekst</td>
+            <td class="text " data-title="Tid i kø">00:00:14</td>
+
+            <td class="text " data-title="Fjern">
+              <button class="myButton warning">Fjern</button>
+            </td>
+          </tr>
         </tbody>
       </table>
     </div>
-    <script src="https://queue-38e6.restdb.io/rest/_jsapi.js"></script>
+    <script src="https://queue-38e6.restdb.io/rest/_node.js"></script>
     <script src="script/dbconnect.js"></script>
     <script src="script/loadFromDb.js"></script>
     <script src="script/script.js"></script>

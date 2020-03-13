@@ -4,8 +4,8 @@ function start() {
     console.log('start');
     document.querySelector("#addToQue").addEventListener("click", addToQue);
     document.querySelector("#closePopup").addEventListener("click", closePopup);
-    document.querySelector("#deleteList_1").addEventListener("click", deleteFromQue);
-    document.querySelector("#readmore_1").addEventListener("click", readmore);
+   
+    // document.querySelector("#readmore_1").addEventListener("click", readmore);
 }
 
 function addToQue() {
@@ -14,12 +14,7 @@ function addToQue() {
     document.querySelector("#add").classList.remove("hide");
 }
 
-function deleteFromQue() {
-    console.log('deleteFromQue');
-    document.querySelector("#popupScreen").classList.remove("hide");
-    document.querySelector("#delete").classList.remove("hide");
 
-}
 
 function readmore() {
     document.querySelector("#popupScreen").classList.remove("hide");
