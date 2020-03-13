@@ -117,10 +117,11 @@ function showContent() {
             fetch(dbUrl + "/" + el._id, {
            
 
-                method: "PUT",
-                mode: 'cors',
+                method: "PATCH",
+                
                 headers: {
                     "Content-Type": "application/json; charset=utf-8",
+                    // "Access- Control - Allow - Origin": "*",
                    // "Content-Type": "application/json",
 
                     "x-apikey": apikey,
@@ -197,11 +198,11 @@ function showContent() {
 
 
 function test(){
-    fetch(dbUrl + "/" + "5e68f52898d98e0c00001922", {
+    fetch(dbUrl, {
 
 
-    method: "PUT",
-    mode: 'cors',
+    method: "POST",
+   
     headers: {
         "Content-Type": "application/json; charset=utf-8",
 
