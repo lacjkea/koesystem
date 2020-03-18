@@ -53,9 +53,10 @@ function dataUpdateRow(event, body,  updateId, deleteId ){
 
     if (updateId != deleteId) {
         dataDeleteRow(event, deleteId);
+        deletedIds.push(deleteId);
     } 
 
-    deletedIds.push(deleteId);
+   
     //console.log("deletedIds.push(id) in data delete", deletedIds);
     //delete from local problems first
     domDeleteRows();
