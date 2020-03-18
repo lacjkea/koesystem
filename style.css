@@ -65,10 +65,6 @@ textarea {
   top: 0;
 }
 
-.hide {
-  display: none;
-}
-
 #popupScreenContent {
   /* position: absolute; */
   padding: 20px;
@@ -116,7 +112,7 @@ textarea {
   margin: 0;
   padding: 1em 0.5em;
   color: #222;
-  max-width: 800px;
+  max-width: 960px;
   margin: 0 auto;
 }
 
@@ -201,6 +197,10 @@ table.rg-table td {
   padding: 0.35em;
   font-size: 0.9em;
 }
+
+/* table.rg-table td:last-child {
+  width: 200px;
+} */
 
 table.rg-table .highlight td {
   font-weight: bold;
@@ -305,4 +305,8 @@ td.number {
     background-color: inherit;
     font-weight: normal;
   }
+}
+
+.hide {
+  display: none;
 }

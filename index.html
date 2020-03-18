@@ -19,22 +19,9 @@
           <img id="closePopup" src="icons/close.svg" alt="close" />
         </div>
 
-        <div id="add" class="hide">
+        <div id="insert" class="hide">
           <caption class="rg-header">
             <p class="rg-hed">Opret feedback/vejledningsspørgsmål</p>
-
-            Navn:<br />
-            <input type="text" name="name" value="" /><br />
-            Problem overskrift:<br />
-            <input type="text" name="problem_short" value="" /><br />
-            Evt. længere beskrivelse af problemet:<br />
-            <textarea rows="4" cols="50" name="problem_long"></textarea
-            ><br />
-            <br />
-
-            <span class="rg-dek">
-              <button id="addProblem" class="myButton">Tilføj</button></span
-            >
           </caption>
         </div>
 
@@ -63,58 +50,56 @@
                   </option>
 
                   <template id="solved_by">
-                    <option value="Ole">Ole</option>
+                    <option data-id="">Ole</option>
                   </template>
                 </select>
               </div>
             </div>
+          </caption>
+        </div>
 
-            <br />
-            <!-- 
+        <br />
+        <!-- 
             ...overtager min plads i køen. -->
 
-            Navn:<br />
-            <input type="text" name="name" data-content="name" /><br />
-            Nyt problem overskrift:<br />
-            <input
-              type="text"
-              name="problem_short"
-              data-content="problem_short"
-            /><br />
-            Evt. længere beskrivelse af problemet:<br />
-            <textarea
-              rows="4"
-              cols="50"
-              name="problem_long"
-              data-content="problem_long"
-            ></textarea
-            ><br />
-            <br />
+        Navn:<br />
+        <input type="text" name="name" data-content="name" /><br />
+        Nyt problem overskrift:<br />
+        <input
+          type="text"
+          name="problem_short"
+          data-content="problem_short"
+        /><br />
+        Evt. længere beskrivelse af problemet:<br />
+        <textarea
+          rows="4"
+          cols="50"
+          name="problem_long"
+          data-content="problem_long"
+        ></textarea></
+        ><br />
+        <br />
 
-            <div class="buttonBox">
-              <span class="rg-dek">
-                <button id="updateProblem" class="myButton">
-                  Får pladsen i køen
-                </button></span
-              >
-            </div>
-          </caption>
-        </div>
-
-        <div id="readmore" class="hide">
-          <caption class="rg-header">
-            <p class="rg-hed">Detaljer ang. feedback/vejledningsspørgsmål</p>
-            <p>
-              Lorem ipsum atione ex ea voluptatibus minima alias est? Lorem
-              ipsum dolor sit amet, consectetur adipisicing elit. Voluptatibus
-              accusamus inventore, voluptas fugiat, id perspiciatis nulla,
-              impedit error est neque consequatur repellat nisi quae, tenetur
-              velit consectetur iste labore optio!
-            </p>
-          </caption>
+        <div class="buttonBox">
+          <span class="rg-dek">
+            <button id="updateProblem" class="myButton">
+              Får pladsen i køen
+            </button>
+             <button id="insertProblem" class="myButton">
+            Sæt i kø
+            </button>
+            
+            
+            
+            </span
+          >
         </div>
       </div>
-    </div>
+    
+      </div>
+
+    <!-- SELVE VEJLEDNINGSKØEN -->
+
     <div class="rg-container">
       <table class="rg-table zebra" summary="Hed">
         <caption class="rg-header">
@@ -125,7 +110,7 @@
           <tr>
             <th class="text ">Navn</th>
             <th class="text ">Problem</th>
-            <th class="text ">Tid i kø</th>
+            <th class="text ">Sat i kø klokken:</th>
 
             <th class="text ">Problem</th>
           </tr>
@@ -138,7 +123,7 @@
             <td class="text " data-title="Tid i kø"></td>
 
             <td class="text " data-title="Tilføj problem">
-              <button id="addToQue" class="myButton">Tilføj</button>
+              <button id="insertProblemDialog" class="myButton">Tilføj</button>
             </td>
           </tr>
 
