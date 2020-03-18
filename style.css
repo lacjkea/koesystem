@@ -1,5 +1,6 @@
 html {
   --button-action-color: #77b55a;
+  --button-normal-color: grey;
   --button-warning-color: rgb(240, 45, 45);
   font-family: "Roboto", sans-serif;
 }
@@ -56,7 +57,7 @@ textarea {
   text-align: right;
 }
 
-#popupScreen {
+#dialog {
   width: 100%;
   height: 100%;
   background-color: rgba(129, 129, 129, 0.5);
@@ -65,11 +66,11 @@ textarea {
   top: 0;
 }
 
-#popupScreenContent {
+#dialogContent {
   /* position: absolute; */
   padding: 20px;
   max-width: 600px;
-  height: 600px;
+  /* height: 600px; */
   margin: 5% auto;
 
   background-color: white;
@@ -105,6 +106,11 @@ textarea {
   background-color: var(--button-warning-color);
 }
 
+.normal {
+  background-color: var(--button-normal-color);
+  text-shadow: 0px 1px 0px grey;
+  width: 8ch;
+}
 /* info (hed, dek, source, credit) */
 .rg-container {
   font-size: 16px;

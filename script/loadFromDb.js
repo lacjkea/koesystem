@@ -1,28 +1,17 @@
 window.addEventListener("load", start);
 
+let deletedIds = [];
+
 function start() {
-    console.log('start');
+    //console.log('start');
 
     dataGet();
-
-    document.querySelector("#closePopup").addEventListener("click", closePopup);
-
-    document.querySelector("#insertProblemDialog").addEventListener("click", domDialogShowInsert);
-
-
-
+    document.querySelector("#closeDialog").addEventListener("click", closeDialog);
+    document.querySelector("#insertDialogShow").addEventListener("click", insertDialogShow);
 }
-function closePopup() {
-    document.querySelector("#popupScreen").classList.add("hide");
-   // document.querySelector("#insertProblem").addEventListener("click", domDialogShowInsert);
- 
-    domDialogReset();
- 
 
-
-}
 function dataGet(){
-    console.log("dataGet");
+    //console.log("dataGet");
     fetch(dbUrl +"?metafields=true", {
         method: "get",
         headers: {
@@ -43,24 +32,61 @@ function dataGet(){
                 return 0;
             });
 
-
-
-
-            console.table(problems);
+           // console.table(problems);
         
             domDeleteRows();
-            domShowContent(problems);
-            closePopup();
+
+            //console.log("deletedIDS", deletedIds);
+            var problemsWithoutDeleteditems = problems.filter(function (item) {
+                return deletedIds.indexOf(item._id) == -1;
+            });
+            //console.log("problemsWithoutDeleteditems in datadelete", problemsWithoutDeleteditems);
+
+            domShowContent(problemsWithoutDeleteditems);
+            //closeDialog();
         });
 }
 function dataUpdateRow(event, body,  updateId, deleteId ){
-    console.log("dataUpdate: ", event,  body, updateId, deleteId);
+    //console.log("dataUpdate: ", event,  body, updateId, deleteId);
+
+    closeDialog();
+
+    if (updateId != deleteId) {
+        dataDeleteRow(event, deleteId);
+    } 
+
+    deletedIds.push(deleteId);
+    //console.log("deletedIds.push(id) in data delete", deletedIds);
+    //delete from local problems first
+    domDeleteRows();
+
+
+    let problemsWithoutDeleteditems ={};
+  
+     problemsWithoutDeleteditems = problems.filter(function (item) {
+        return deletedIds.indexOf(item._id) == -1;
+    });
+
+    console.log("problemsWithoutDeleteditems" );
+    console.table(problemsWithoutDeleteditems);
+
+    //let updateIndex = problemsWithoutDeleteditems.indexOf(updateId);
+    let updateIndex = problems.map(function (e) { return e._id; }).indexOf(updateId);
+
+    console.log("updateIndex: ", updateIndex);
+
+    problemsWithoutDeleteditems[updateIndex].problem_owner = body.problem_owner;
+    problemsWithoutDeleteditems[updateIndex].problem_short = body.problem_short;
+    problemsWithoutDeleteditems[updateIndex].problem_long = body.problem_long;
+    
+
+    //console.log("problemsWithoutDeleteditems in datadelete", problemsWithoutDeleteditems);
+
+    domShowContent(problemsWithoutDeleteditems);
+
 
     fetch(dbUrl + "/" + updateId, {
-
-
         method: "PATCH",
-
         headers: {
             "Content-Type": "application/json; charset=utf-8",
             "x-apikey": apikey,
@@ -70,17 +96,28 @@ function dataUpdateRow(event, body,  updateId, deleteId ){
         json: true
     }).then(e => e.json())
         .then(e => {
-
-            if(updateId!=deleteId){
-            dataDeleteRow(event, deleteId);
-            } else {
+           
                 dataGet();
-            }
+            
         });
-
 }
 function dataDeleteRow(event, id) {
     console.log("eventhandler", event, id);
+    closeDialog();
+
+    deletedIds.push(id);
+    //console.log("deletedIds.push(id) in data delete", deletedIds);
+    //delete from local problems first
+    domDeleteRows();
+
+    var problemsWithoutDeleteditems = problems.filter(function (item) {
+        return deletedIds.indexOf(item._id) == -1 ;
+    });
+
+    //console.log("problemsWithoutDeleteditems in datadelete", problemsWithoutDeleteditems);
+
+    domShowContent(problemsWithoutDeleteditems);
+    //delete from local problems SLUT
 
          fetch(dbUrl + "/" + id, {
 
@@ -99,43 +136,24 @@ function dataDeleteRow(event, id) {
          
      
  }
+function dataInsert( body){
+     console.log("dataInsert",body );
 
-function domDialogReset(){
-    console.log("domDialogReset");
+    //update local problems
+    closeDialog();
 
-    document.querySelector("#insert").classList.add("hide");
-    document.querySelector("#delete").classList.add("hide");
+    const bodyTemp = JSON.parse(JSON.stringify(body));
+    console.log("problems bodyTemp: ", bodyTemp);
+    bodyTemp._created = "opdaterer";
+    console.log("problems bodyTemp med created: ", bodyTemp);
+    problems.push(bodyTemp);
+    console.log("problems : ");
+    console.table(problems);
+  
+    //console.table(problems);
+    domDeleteRows();
+    domShowContent(problems);
 
-    document.querySelector("  [data-content=name]").value = "";
-    document.querySelector("  [data-content=problem_short]").value = "";
-    document.querySelector(" [data-content=problem_long]").value = "";
-    //document.querySelector("#insertProblem").addEventListener("click", domDialogShowInsert);
-    //document.querySelector("[data-content=deleteList]").removeEventListener("click", domDialogShowInsertRow);
-   
-
-}
-
-function domDialogShowInsertRow() {
-
-
-    console.log('domDialogShowInsertRow');
-
-   // document.querySelector("[data-content=deleteList]").removeEventListener("click", domDialogShowInsertRow);
-    let problem_owner = document.querySelector("  [data-content=name]").value;
-    let problem_short = document.querySelector("  [data-content=problem_short]").value;
-    let problem_long = document.querySelector(" [data-content=problem_long]").value;
-    //2 next lines updates my problem
-    let body = { "problem_owner": problem_owner, "problem_short": problem_short, "problem_long": problem_long };
-
-
-
-    dataInsertRow(body);
-
-
-}
-
-function dataInsertRow( body){
-     console.log("dataInsertRow", );
 
 
  
@@ -164,12 +182,12 @@ function dataInsertRow( body){
          });
  }
 function dropdownListChosenRow(event, id, problems) {
-    console.log("sbListChosen", id);
+    //console.log("sbListChosen", id);
 
-    document.querySelector("#updateProblem").dataset.id = id;
+    document.querySelector("#updateBtn").dataset.id = id;
     let chosen = problems.filter(problem => problem._id === id);
 
-    document.querySelector("  [data-content=name]").value = chosen[0].problem_owner;;
+    document.querySelector("  [data-content=name]").value = chosen[0].problem_owner;
     document.querySelector("  [data-content=problem_short]").value = chosen[0].problem_short;
     document.querySelector("  [data-content=problem_long]").value = chosen[0].problem_long;
 
@@ -180,11 +198,17 @@ function dropdownListChosenRow(event, id, problems) {
 function format(date) {
     console.log("date",date);
 
+    
+
 
 
 
     const hours = date.getHours();
     const minutes = date.getMinutes();
+
+    if (isNaN(hours)) {
+        return "OPDATERER";
+    }
 
    // return (1 + ((hours - 1) % 12)) + ":" + minutes.toString().padStart(2, "0") + " " + ((hours > 11) ? "PM" : "AM");
     return (1 + ((hours - 1) % 12)) + ":" + minutes.toString().padStart(2, "0") ;
@@ -195,26 +219,72 @@ function format(date) {
 
 ///------------------------------------DOM funktioner-----------------------------------------------
 
-function domDialogShowInsert() {
-    console.log('domDialogShowInsert');
 
-    document.querySelector("#popupScreen").classList.remove("hide");
-    document.querySelector("#delete").classList.add("hide");
+
+function closeDialog() {
+    //console.log("dialogClose");
+
+    document.querySelector("#dialog").classList.add("hide");
+
+   // document.querySelector("#insertBtn").classList.add("hide");
+    //document.querySelector("#delete").classList.add("hide");
+
+    document.querySelector("  [data-content=name]").value = "";
+    document.querySelector("  [data-content=problem_short]").value = "";
+    document.querySelector(" [data-content=problem_long]").value = "";
+
+ 
+
+
+}
+
+function insert() {
+    //console.log('insert');
+
+    let problem_owner = document.querySelector("  [data-content=name]").value;
+    let problem_short = document.querySelector("  [data-content=problem_short]").value;
+    let problem_long = document.querySelector(" [data-content=problem_long]").value;
+    //2 next lines updates my problem
+    let body = { "problem_owner": problem_owner, "problem_short": problem_short, "problem_long": problem_long };
+
+
+
+    dataInsert(body);
+
+
+}
+
+
+  
+
+
+// }
+
+function insertDialogShow() {
+    //console.log('insertDialogShow');
+
+    //SHOW
+    document.querySelector("#dialog").classList.remove("hide");
+    document.querySelector("#insertBtn").classList.remove("hide");
     document.querySelector("#updateProblem").classList.add("hide");
-
-    document.querySelector("#insertProblem").classList.remove("hide");
+    document.querySelector("#problem").classList.remove("hide");
    
 
-    document.querySelector("#insert").classList.remove("hide");
+    //HIDE
+    document.querySelector("#delete").classList.add("hide");
+    document.querySelector("#updateBtn").classList.add("hide");
+    
+    //CLICK
+    document.querySelector("#insertBtn").addEventListener("click", insert);
 
-    document.querySelector("#insertProblem").addEventListener("click", domDialogShowInsertRow);
-    document.querySelector("#updateProblem").dataset.id = "";
-    domDialogReset();
+    //DATA
+    document.querySelector("#updateBtn").dataset.id = "";
+   
 }
 
 
 function domDeleteRows(){
-    console.log("deleteRow");
+    //console.log("deleteRow");
   
     //document.querySelector(`.id_${id}`).remove();
     document.querySelectorAll("tbody > tr:nth-child(n+2)").forEach(e => e.remove());
@@ -222,8 +292,8 @@ function domDeleteRows(){
     
 }
 function domShowContent(problems) {
-    console.log("showContent");
-    // document.querySelector("#popupScreen").classList.add("hide");
+    //console.log("showContent");
+    // document.querySelector("#dialog").classList.add("hide");
     // document.querySelector("#delete").classList.add("hide");
 
 
@@ -248,14 +318,15 @@ function domShowContent(problems) {
         clone.querySelector("[data-content=problem_short]").innerHTML = `<strong>${el.problem_short}</strong><br> ${el.problem_long} `;
         const date = new Date(el._created);
         clone.querySelector("[data-content=timeInQue]").textContent = format(date);
-        ;
-        clone.querySelector("button").dataset.id = el._id;
+        //console.log("id: ", el._id);
+        clone.querySelector("[data-content=deleteList]").dataset.id = el._id;
 
 
 
 //--------------------------------------Klik på delete/update knap -------------------------------------- 
 
-        clone.querySelector("[data-content=deleteList]").addEventListener("click", domDialogShow);
+        clone.querySelector("[data-content=deleteList]").addEventListener("click", deleteDialogShow);
+        clone.querySelector("[data-content=updateList]").addEventListener("click", updateDialogShow);
 //--------------------------------------Klik på delete/update knap slut -------------------------------------- 
 
 
@@ -272,7 +343,7 @@ function domShowContent(problems) {
 
 
         var dropdownListChosen = (event) => {
-            console.log("remove eventlistener fra sbList this", this);
+            //console.log("remove eventlistener fra sbList this", this);
           
             let id = document.querySelector("#selections").value;
             dropdownListChosenRow(event, id, problems);
@@ -282,54 +353,94 @@ function domShowContent(problems) {
 
         dropdownList.addEventListener("change", dropdownListChosen);
 
-        function domDialogShow() {
-            console.log('deleteFromQueDialog');
-            document.querySelector("#popupScreen").classList.remove("hide");
+        function deleteDialogShow() {
+            console.log('deleteDialogShow');
 
-            document.querySelector("#insertProblem").classList.add("hide");
-            document.querySelector("#updateProblem").classList.remove("hide");
-           // document.querySelector("#insertProblem").removeEventListener("click", domDialogShow);
-           // document.querySelector("#insertProblem").removeEventListener("click", domDialogShowInsert);
+            console.log("HER KOMMER ID", this.dataset.id);
+             
+            //SHOW
 
-            //domDialogReset();
-
-           
-                document.querySelector("#delete").classList.remove("hide");
+            document.querySelector("#dialog").classList.remove("hide");
+            document.querySelector("#delete").classList.remove("hide");
             
+
+            //HIDE
+            document.querySelector("#insertBtn").classList.add("hide");
+            document.querySelector("#updateBtn").classList.add("hide");
+            document.querySelector("#problem").classList.add("hide");
+            document.querySelector("#updateProblem").classList.add("hide");
+          
             
-            //document.querySelector("#updateProblem").addEventListener("click", updateProblem);
+            //document.querySelector("#updateBtn").addEventListener("click", updateProblem);
            
             // Assign the listener callback to a variable, and remove ventlistener. 
             var deleteRow = (event) => {
-                console.log("remove eventlistener fra #removeProblem");
-                dataDeleteRow(event, this.dataset.id);
+                //console.log("remove eventlistener fra #removeProblem");
                 document.querySelector("#removeProblem").removeEventListener('click', deleteRow);
+        
+                dataDeleteRow(event, this.dataset.id);
+                //console.log("HER KOMMER ID", this.dataset.id);
+               // document.querySelector("#removeProblem").removeEventListener('click', deleteRow);
             };
             document.querySelector("#removeProblem").addEventListener('click', deleteRow);
 
-            var updateRow = (event) => {
-                console.log("remove eventlistener fra #removeProblem");
-                let deleteId = document.querySelector("#updateProblem").dataset.id;
-                console.log("this.dataset.id", this.dataset.id)
-
-                let id = el._id;
-                console.log("this.value: ", el._id);
-                let problem_owner = document.querySelector("  [data-content=name]").value;
-                let problem_short = document.querySelector("  [data-content=problem_short]").value;
-                let problem_long = document.querySelector(" [data-content=problem_long]").value ;
-                //2 next lines updates my problem
-                let body = { "problem_owner": problem_owner, "problem_short": problem_short, "problem_long": problem_long };
-             
-               
-                    dataUpdateRow(event, body, id, deleteId);
-              
-                document.querySelector("#updateProblem").removeEventListener('click', updateRow);
-            };
-            document.querySelector("#updateProblem").addEventListener('click', updateRow);
+           
 
 
 
       
+        }
+
+        function updateDialogShow() {
+            //console.log('deleteFromQueDialog');
+
+            //HIDE
+            document.querySelector("#insertBtn").classList.add("hide");
+            document.querySelector("#delete").classList.add("hide");
+
+
+            //SHOW
+            document.querySelector("#dialog").classList.remove("hide");
+            document.querySelector("#updateBtn").classList.remove("hide");
+            document.querySelector("#problem").classList.remove("hide");
+            document.querySelector("#updateProblem").classList.remove("hide");
+
+           
+
+
+            //dialogClose();
+
+
+            
+
+
+            //document.querySelector("#updateBtn").addEventListener("click", updateProblem);
+
+           
+
+            var updateRow = (event) => {
+                //console.log("remove eventlistener fra #removeProblem");
+                let deleteId = document.querySelector("#updateBtn").dataset.id;
+                //console.log("this.dataset.id", this.dataset.id)
+
+                let id = el._id;
+                //console.log("this.value: ", el._id);
+                let problem_owner = document.querySelector("  [data-content=name]").value;
+                let problem_short = document.querySelector("  [data-content=problem_short]").value;
+                let problem_long = document.querySelector(" [data-content=problem_long]").value;
+                //2 next lines updates my problem
+                let body = { "problem_owner": problem_owner, "problem_short": problem_short, "problem_long": problem_long };
+
+
+                dataUpdateRow(event, body, id, deleteId);
+
+                document.querySelector("#updateBtn").removeEventListener('click', updateRow);
+            };
+            document.querySelector("#updateBtn").addEventListener('click', updateRow);
+
+
+
+
         }
     });
 

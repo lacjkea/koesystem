@@ -13,20 +13,20 @@
   </head>
 
   <body>
-    <div id="popupScreen" class="hide">
-      <div id="popupScreenContent">
+    <div id="dialog" class="hide">
+      <div id="dialogContent">
         <div class="close">
-          <img id="closePopup" src="icons/close.svg" alt="close" />
+          <img id="closeDialog" src="icons/close.svg" alt="close" />
         </div>
 
-        <div id="insert" class="hide">
+        <div id="insertHeader" class="hide">
           <caption class="rg-header">
             <p class="rg-hed">Opret feedback/vejledningsspørgsmål</p>
           </caption>
         </div>
 
         <div id="delete" class="hide">
-          <caption class="rg-header">
+           <caption class="rg-header">
             <div class="buttonBox">
               <p class="rg-hed">
                 Problemet løst uden hjælp fra studerende
@@ -37,9 +37,15 @@
                 </button></span
               >
             </div>
+
+          </caption>
+        </div>
+         <div id="updateProblem" class="hide">
+           <caption class="rg-header">
             <p class="rg-hed">
               Jeg fik hjælp af:
             </p>
+            </caption>
 
             <div class="solved_by">
               <div class="select">
@@ -55,10 +61,11 @@
                 </select>
               </div>
             </div>
-          </caption>
-        </div>
+          </div>
 
         <br />
+
+        <div id="problem" class="hide">
         <!-- 
             ...overtager min plads i køen. -->
 
@@ -79,13 +86,15 @@
         ></textarea></
         ><br />
         <br />
+        </div>
 
         <div class="buttonBox">
           <span class="rg-dek">
-            <button id="updateProblem" class="myButton">
+            <button id="updateBtn" class="myButton">
               Får pladsen i køen
             </button>
-             <button id="insertProblem" class="myButton">
+
+             <button id="insertBtn" class="myButton">
             Sæt i kø
             </button>
             
@@ -93,9 +102,9 @@
             
             </span
           >
-        </div>
+       
       </div>
-    
+     </div>
       </div>
 
     <!-- SELVE VEJLEDNINGSKØEN -->
@@ -111,7 +120,7 @@
             <th class="text ">Navn</th>
             <th class="text ">Problem</th>
             <th class="text ">Sat i kø klokken:</th>
-
+<th class="text ">Update</th>
             <th class="text ">Problem</th>
           </tr>
         </thead>
@@ -121,9 +130,10 @@
             <td class="text " data-title="Navn"></td>
             <td class="text " data-title="Problem"></td>
             <td class="text " data-title="Tid i kø"></td>
+             <td class="text " data-title="Update"></td>
 
             <td class="text " data-title="Tilføj problem">
-              <button id="insertProblemDialog" class="myButton">Tilføj</button>
+              <button id="insertDialogShow" class="myButton">Tilføj</button>
             </td>
           </tr>
 
@@ -142,13 +152,20 @@
               <td class="text " data-title="Tid i kø" data-content="timeInQue">
                 00:00:00
               </td>
-
-              <td class="text" data-title="Opdater/Fjern">
+<td class="text" data-title="Update">
+                <button
+                  data-content="updateList"
+                  class="updateList_1 myButton normal "
+                >
+                  Update
+                </button>
+              </td>
+              <td class="text" data-title="Fjern">
                 <button
                   data-content="deleteList"
                   class="deleteList_1 myButton warning"
                 >
-                  Opdater/Fjern
+                  Fjern
                 </button>
               </td>
             </tr>
