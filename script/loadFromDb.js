@@ -7,6 +7,7 @@ let addedProblems = [{}];
 function start() {
     //console.log('start');
 
+    
 
  
         var qrcode = new QRCode(document.getElementById("qrcode"), {
