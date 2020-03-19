@@ -1,17 +1,41 @@
 window.addEventListener("load", start);
 
 let deletedIds = [];
+let addedProblems = [{}];
+
 
 function start() {
     //console.log('start');
+
+
+ 
+        var qrcode = new QRCode(document.getElementById("qrcode"), {
+            text: window.location.href,
+        width: 128,
+        height: 128,
+        colorDark : "#000000",
+        colorLight : "#ffffff",
+        correctLevel : QRCode.CorrectLevel.H
+    });
+
 
     dataGet();
     document.querySelector("#closeDialog").addEventListener("click", closeDialog);
     document.querySelector("#insertDialogShow").addEventListener("click", insertDialogShow);
 }
 
-function dataGet(){
+function dataGet(justAddedId){
     //console.log("dataGet");
+
+    //remove just added problem
+
+    posJustAddedId = addedProblems.map(function (element) { return element._id; }).indexOf(justAddedId);
+    addedProblems.splice(posJustAddedId, 1);
+   
+    
+
+
+
     fetch(dbUrl +"?metafields=true", {
         method: "get",
         headers: {
@@ -36,14 +60,75 @@ function dataGet(){
         
             domDeleteRows();
 
-            //console.log("deletedIDS", deletedIds);
-            var problemsWithoutDeleteditems = problems.filter(function (item) {
+           
+
+
+            //add added not in problems yet
+            let localProblems = problems.concat(JSON.parse(JSON.stringify(addedProblems)));
+          
+            //filter out deleted probelms
+            var problemsWithoutDeleteditems = localProblems.filter(function (item) {
                 return deletedIds.indexOf(item._id) == -1;
             });
-            //console.log("problemsWithoutDeleteditems in datadelete", problemsWithoutDeleteditems);
-
+           
             domShowContent(problemsWithoutDeleteditems);
-            //closeDialog();
+         
+        });
+}
+function dataInsert(body) {
+    console.log("dataInsert", body);
+
+    //update local problems
+    closeDialog();
+
+
+
+    const bodyTemp = JSON.parse(JSON.stringify(body));
+    console.log("problems bodyTemp: ", bodyTemp);
+    bodyTemp._created = "opdaterer";
+    console.log("problems bodyTemp med created: ", bodyTemp);
+    console.log("addedprobelms",addedProblems);
+
+
+    addedProblems.push(bodyTemp);
+    let localProblems = problems.concat(JSON.parse(JSON.stringify(addedProblems)));
+
+    var problemsWithoutDeleteditems = localProblems.filter(function (item) {
+        return deletedIds.indexOf(item._id) == -1;
+    });
+
+    domDeleteRows();
+    domShowContent(problemsWithoutDeleteditems);
+
+    
+
+
+
+
+
+
+
+
+    fetch(dbUrl, {
+
+
+        method: "POST",
+
+        headers: {
+            "Content-Type": "application/json; charset=utf-8",
+            "x-apikey": apikey,
+            "cache-control": "no-cache"
+        },
+        body: JSON.stringify(body),
+        json: true
+    }).then(e => e.json())
+        .then(e => {
+            let addedProblem =e;
+
+            dataGet(addedProblem._id);
+
+
+
         });
 }
 function dataUpdateRow(event, body,  updateId, deleteId ){
@@ -51,14 +136,12 @@ function dataUpdateRow(event, body,  updateId, deleteId ){
 
     closeDialog();
 
+    //if i update my own
     if (updateId != deleteId) {
         dataDeleteRow(event, deleteId);
         deletedIds.push(deleteId);
     } 
-
-   
-    //console.log("deletedIds.push(id) in data delete", deletedIds);
-    //delete from local problems first
+    //delete from the dom first
     domDeleteRows();
 
 
@@ -137,51 +220,7 @@ function dataDeleteRow(event, id) {
          
      
  }
-function dataInsert( body){
-     console.log("dataInsert",body );
 
-    //update local problems
-    closeDialog();
-
-    const bodyTemp = JSON.parse(JSON.stringify(body));
-    console.log("problems bodyTemp: ", bodyTemp);
-    bodyTemp._created = "opdaterer";
-    console.log("problems bodyTemp med created: ", bodyTemp);
-    problems.push(bodyTemp);
-    console.log("problems : ");
-    console.table(problems);
-  
-    //console.table(problems);
-    domDeleteRows();
-    domShowContent(problems);
-
-
-
- 
-  
-
-     fetch(dbUrl, {
-
-
-         method: "POST",
-
-         headers: {
-             "Content-Type": "application/json; charset=utf-8",
-             "x-apikey": apikey,
-             "cache-control": "no-cache"
-         },
-         body: JSON.stringify(body),
-         json: true
-     }).then(e => e.json())
-         .then(e => {
-            
-           
-             dataGet();
-          
-
-
-         });
- }
 function dropdownListChosenRow(event, id, problems) {
     //console.log("sbListChosen", id);
 
@@ -197,7 +236,7 @@ function dropdownListChosenRow(event, id, problems) {
 
 }
 function format(date) {
-    console.log("date",date);
+   // console.log("date",date);
 
     
 
