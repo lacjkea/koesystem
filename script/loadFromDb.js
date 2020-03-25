@@ -66,7 +66,7 @@ function checkRoomExists() {
             } else {
 
                 //return false;
-                window.history.pushState("index.html", "Title", "/" + location.pathname );
+                window.history.pushState("index.html", "Title",  location.pathname +"/" );
                 start();
 
 
@@ -790,7 +790,7 @@ function newUrl() {
     
 
     //næste linielaver ny url
-    window.history.pushState("index.html", "Title","/"+ location.pathname +"?room=" + createRoomDomVars.roomName.value);
+    window.history.pushState("index.html", "Title", location.pathname +"?room=" + createRoomDomVars.roomName.value);
     //insert new url i variable
     createRoomDomVars.UrlRoom = getUrlVars()["room"];
 }
