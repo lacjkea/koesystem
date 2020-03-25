@@ -66,7 +66,7 @@ function checkRoomExists() {
             } else {
 
                 //return false;
-                window.history.pushState(window.location.href.split('?')[0] +"/index.html", "Title", "/" );
+                window.history.pushState("index.html", "Title", "/" + location.pathname );
                 start();
 
 
@@ -790,7 +790,7 @@ function newUrl() {
     
 
     //næste linielaver ny url
-    window.history.pushState(window.location.href.split('?')[0] +"/index.html", "Title", "?room=" + createRoomDomVars.roomName.value);
+    window.history.pushState("index.html", "Title","/"+ location.pathname +"?room=" + createRoomDomVars.roomName.value);
     //insert new url i variable
     createRoomDomVars.UrlRoom = getUrlVars()["room"];
 }
