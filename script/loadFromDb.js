@@ -66,7 +66,7 @@ function checkRoomExists() {
             } else {
 
                 //return false;
-                window.history.pushState("index.html", "Title", "/" );
+                window.history.pushState(window.location.href +"/index.html", "Title", "/" );
                 start();
 
 
@@ -674,7 +674,7 @@ function writeFieldRoom() {
     }
 }
 
-createRoomDomVars.password.addEventListener("click", clearFieldPassword);
+createRoomDomVars.password.addEventListener("focusin", clearFieldPassword);
 createRoomDomVars.password.addEventListener("focusout", writeFieldPassword);
 function clearFieldPassword() {
     console.log("clearFieldPassword");
@@ -788,7 +788,7 @@ function newUrl() {
     
 
     //næste linielaver ny url
-    window.history.pushState("index.html", "Title", "?room=" + createRoomDomVars.roomName.value);
+    window.history.pushState(window.location.href +"/index.html", "Title", "?room=" + createRoomDomVars.roomName.value);
     //insert new url i variable
     createRoomDomVars.UrlRoom = getUrlVars()["room"];
 }
