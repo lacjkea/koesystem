@@ -14,7 +14,93 @@
   </head>
 
   <body>
-    <div id="qrcode"></div>
+    <div class="rg-container">
+    <header>    
+      <div id="qrcode"></div>
+      <div id="createroom">
+        <!-- <form> -->
+        <input type="text" data-create ="room" value="Opret rum">
+        <input type="text" data-create ="room_password" value="Opret password">
+        <br>
+        <button class="myButton ">Opret rum</button>
+        <!-- </form> -->
+      </div>
+
+    </header>
+
+
+
+    <!-- SELVE VEJLEDNINGSKØEN -->
+
+      <div id="que" class="hide">
+      
+        <table class="rg-table zebra" summary="Hed">
+          <caption class="rg-header">
+            <span class="rg-hed">Kø: </span>
+          </caption>
+
+          <thead>
+            <tr>
+              <th class="text ">Navn</th>
+              <th class="text ">Problem</th>
+              <th class="text ">Sat i kø:</th>
+              <th class="text ">Update</th>
+              <th class="text "></th>
+            </tr>
+          </thead>
+
+          <tbody>
+            <tr class="">
+              <td class="text " data-title="Navn"></td>
+              <td class="text " data-title="Problem"></td>
+              <td class="text " data-title="Tid i kø"></td>
+              <td class="text " data-title="Update"></td>
+
+              <td class="text " data-title="">
+                <button id="insertDialogShow" class="myButton">Tilføj problem</button>
+              </td>
+            </tr>
+
+            <template id="question">
+              <tr data-content="id">
+                <td class="text " data-title="Navn" data-content="name">
+                  FullName
+                </td>
+                <td
+                  class="text "
+                  data-title="Problem"
+                  data-content="problem_short"
+                >
+                  Tekst
+                </td>
+                <td class="text " data-title="Sat i kø" data-content="timeInQue">
+                  00:00:00
+                </td>
+                <td class="text" data-title="Update">
+                  <button
+                    data-content="updateList"
+                    class="updateList_1 myButton normal "
+                  >
+                    Update
+                  </button>
+                </td>
+                <td class="text" data-title="Fjern">
+                  <button
+                    data-content="deleteList"
+                    class="deleteList_1 myButton warning"
+                  >
+                    Fjern
+                  </button>
+                </td>
+              </tr>
+            </template>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+
+
     <div id="loading"><img src="icons/loading.gif" alt="loading image"></div>
 
     <div id="dialog" class="hide">
@@ -25,7 +111,7 @@
 
         <div id="insertHeader" class="hide">
           <caption class="rg-header">
-            <p class="rg-hed">Opret feedback/vejledningsspørgsmål</p>
+            <p class="rg-hed">Opret feedback/vejledningsspørgsmål: </p>
           </caption>
         </div>
 
@@ -74,15 +160,17 @@
             ...overtager min plads i køen. -->
 
         Navn:<br />
-        <input type="text" name="name" data-content="name" /><br />
+        <input type="text" name="name" data-content="name"  /><br />
         Nyt problem overskrift:<br />
         <input
+         
           type="text"
           name="problem_short"
           data-content="problem_short"
         /><br />
         Evt. længere beskrivelse af problemet:<br />
         <textarea
+         
           rows="4"
           cols="50"
           name="problem_long"
@@ -111,72 +199,7 @@
      </div>
       </div>
 
-    <!-- SELVE VEJLEDNINGSKØEN -->
 
-    <div class="rg-container">
-      <table class="rg-table zebra" summary="Hed">
-        <caption class="rg-header">
-          <span class="rg-hed">Feedback/Vejledningskø</span>
-        </caption>
-
-        <thead>
-          <tr>
-            <th class="text ">Navn</th>
-            <th class="text ">Problem</th>
-            <th class="text ">Sat i kø klokken:</th>
-<th class="text ">Update</th>
-            <th class="text ">Problem</th>
-          </tr>
-        </thead>
-
-        <tbody>
-          <tr class="">
-            <td class="text " data-title="Navn"></td>
-            <td class="text " data-title="Problem"></td>
-            <td class="text " data-title="Tid i kø"></td>
-             <td class="text " data-title="Update"></td>
-
-            <td class="text " data-title="Tilføj problem">
-              <button id="insertDialogShow" class="myButton">Tilføj</button>
-            </td>
-          </tr>
-
-          <template id="question">
-            <tr data-content="id">
-              <td class="text " data-title="Navn" data-content="name">
-                FullName
-              </td>
-              <td
-                class="text "
-                data-title="Problem"
-                data-content="problem_short"
-              >
-                Tekst
-              </td>
-              <td class="text " data-title="Tid i kø" data-content="timeInQue">
-                00:00:00
-              </td>
-<td class="text" data-title="Update">
-                <button
-                  data-content="updateList"
-                  class="updateList_1 myButton normal "
-                >
-                  Update
-                </button>
-              </td>
-              <td class="text" data-title="Fjern">
-                <button
-                  data-content="deleteList"
-                  class="deleteList_1 myButton warning"
-                >
-                  Fjern
-                </button>
-              </td>
-            </tr>
-          </template>
-        </tbody>
-      </table>
-    </div>
     <script src="https://queue-38e6.restdb.io/rest/_jsapi.js"></script>
     <script src="script/dbconnect.js"></script>
     <script src="script/loadFromDb.js"></script>

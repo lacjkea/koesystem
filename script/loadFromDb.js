@@ -1,16 +1,94 @@
-
-window.addEventListener("load", start);
+window.addEventListener("load", checkRoomExists);
 
 let deletedIds = [];
 let tempId;
 let problems = [{}];
-let userId = localStorage.getItem('user');
-let superUserId = getUrlVars()["superuser"];
+//I have set a localstorrage localStorage.getItem('user');
+
+//let mySuperUserPassword = localStorage.getItem("superuserPassword");
+let mySuperUserPassword ="";
+let currentQueSuperUserPassword;
 let runningProcesses = 0;
 
 setInterval(dataGet, 10000);
 
-function SHOW_problems_addedProblems_deletedIds_SHOW(){
+const createRoomDomVars ={};
+createRoomDomVars.roomName =document.querySelector("#createroom [data-create=room]");
+createRoomDomVars.password = document.querySelector("#createroom  [data-create=room_password]")
+createRoomDomVars.button = document.querySelector("#createroom  button");
+createRoomDomVars.buttons = document.querySelector("#createroom");
+
+createRoomDomVars.UrlRoom;
+createRoomDomVars.que = document.querySelector("#que");
+
+
+
+function checkRoomExists() {
+    console.log("checkRoomExists room: ");
+    // check that createRoomDomVars.roomName is not in database
+    fetch(dbUrl + "/rooms", {
+        method: "get",
+        headers: {
+            "Content-Type": "application/json; charset=utf-8",
+            "x-apikey": apikey,
+            "cache-control": "no-cache"
+        }
+    })
+        .then(e => e.json())
+        .then(e => {
+            rooms = e;
+            let roomtaken = rooms.filter(room => room.roomname === getUrlVars()["room"]);
+            console.log("roomtaken:", roomtaken);
+
+            if (roomtaken.length > 0) {
+                //that is there is a room allready
+
+                //SETS A VARIABLE
+                createRoomDomVars.UrlRoom = getUrlVars()["room"];
+                currentQueSuperUserPassword = roomtaken[0].password;
+
+                //currentQueSuperUserPassword 
+                if (localStorage.getItem("superuserPassword") === currentQueSuperUserPassword) {
+                    //SETS A VARIABLE
+                    mySuperUserPassword = currentQueSuperUserPassword;
+                } else {
+                    mySuperUserPassword = "";
+                }
+                start();
+
+                //add current url to header
+                document.querySelector("#que > table > caption > span").textContent +=" "+ window.location.href;
+
+
+
+                //console.log("currentQueSuperUserPassword = roomtaken.password", currentQueSuperUserPassword, roomtaken.password);
+                //return true;
+            } else {
+
+                //return false;
+                window.history.pushState("index.html", "Title", "/" );
+                start();
+
+
+                //go to the frontpage
+            }
+        })
+
+
+
+    //if room exixts write the name with a dash - allready exists and make red
+};
+function start() {
+    console.log('start');
+    tempId =1;
+    //getUrlVars();
+       
+    dataGet();
+    document.querySelector("#closeDialog").addEventListener("click", closeDialog);
+    roomIsSet();
+}
+
+function SHOW_problems_addedProblems_deletedIds_SHOW() {
 
     //-----------Generates problemsWithoutDeleteditems whitch is problems + addedproblems - deletedproblems
     let problemsWithoutDeleteditems = {};
@@ -30,37 +108,22 @@ function SHOW_problems_addedProblems_deletedIds_SHOW(){
     domDeleteRows();
     //show all
     domShowContent(problemsWithoutDeleteditems);
+    document.querySelector("#loading").classList.add("hide");
+
 }
-
-
-
-function start() {
-    console.log('start');
-    tempId =1;
-    getUrlVars();
-        var qrcode = new QRCode(document.getElementById("qrcode"), {
-            text: window.location.href,
-        width: 128,
-        height: 128,
-        colorDark : "#000000",
-        colorLight : "#ffffff",
-        correctLevel : QRCode.CorrectLevel.H
-         });
-    dataGet();
-    document.querySelector("#closeDialog").addEventListener("click", closeDialog);
-}
-
-
-
-
-
 function dataGet(justAddedId){
+    //disableInsert();
+
+
+    //to find currentQueSuperUserPassword
+    
+
     runningProcesses++;
 
     console.log("dataGet");
-    disableInsert();
+    
   
-    fetch(dbUrl +"?metafields=true", {
+    fetch(dbUrl+"/problems" +"?metafields=true", {
         method: "get",
         headers: {
             "Content-Type": "application/json; charset=utf-8",
@@ -70,14 +133,21 @@ function dataGet(justAddedId){
     })
         .then(e => e.json())
         .then(e => {
-            problems = e;
-            document.querySelector("#loading").classList.add("hide");
+            //only get current rooms problems
+            problems = e.filter(element => element.room ===  getUrlVars()["room"]);
+            //document.querySelector("#loading").classList.add("hide");
+
+
+            //if superuserPassword exixts
             
-           
-            // //tjek om de næste 2 linier virker
-            // //remove just added problem
-            // posJustAddedId = problems.map(function (element) { return element._id; }).indexOf(justAddedId);
-            // problems.splice(posJustAddedId, 1);
+            //hvis userid not in problems
+            let myproblem = problems.filter(problem => problem._id == localStorage.getItem('user'))
+            console.log("userid : myproblem", localStorage.getItem('user'), myproblem.length);
+            if (myproblem.length < 1) {
+               localStorage.removeItem("user");
+            }
+
+            disableInsert();
 
             runningProcesses--;
             console.log("problems i dataGet, runningprocess", runningProcesses);
@@ -89,12 +159,10 @@ function dataGet(justAddedId){
           
         });
 }
-
-
 function dataInsert(body) {
     //console.log("dataInsert", body);
     runningProcesses++;
-    disableInsert();
+   
     closeDialog();
 
     //-----------generate temp object that is a copy of body, but with a id and a timestamp and puts it in addedProblems
@@ -110,14 +178,14 @@ function dataInsert(body) {
     
  SHOW_problems_addedProblems_deletedIds_SHOW();
 
-//remember to delete these
-    console.log("problems");
-    console.table(problems);
-    console.log("deletd Ids");
-    console.table(deletedIds);
+
+    //inserts the room into the body
+    body.room = getUrlVars()["room"];
 
 
-    fetch(dbUrl, {
+
+
+    fetch(dbUrl + "/problems", {
         method: "POST",
         headers: {
             "Content-Type": "application/json; charset=utf-8",
@@ -137,12 +205,12 @@ function dataInsert(body) {
             //set the userID equal to the current problems added
             if (localStorage.getItem('user')==null){
                 localStorage.setItem("user", addedProblem._id);
-                userId = localStorage.getItem('user');
+             
                 document.querySelector("#insertDialogShow").removeEventListener("click", insertDialogShow);
                 document.querySelector("#insertDialogShow").classList.add("disabled");
-            } else {
-            userId = localStorage.getItem('user');
-            }
+            } 
+           
+          
         });
 }
 function dataUpdate(event, body,  idProblemOwner, idProblemHelper  ){
@@ -170,7 +238,7 @@ function dataUpdate(event, body,  idProblemOwner, idProblemHelper  ){
 
     SHOW_problems_addedProblems_deletedIds_SHOW();
 
-    fetch(dbUrl + "/" + idProblemHelper, {
+    fetch(dbUrl + "/problems" + "/" + idProblemHelper, {
         method: "PATCH",
         headers: {
             "Content-Type": "application/json; charset=utf-8",
@@ -191,21 +259,21 @@ function dataUpdate(event, body,  idProblemOwner, idProblemHelper  ){
         });
 }
 function dataDelete(event, id) {
-    //console.log("eventhandler", event, id);
+    console.log("dataDelete" );
     closeDialog();
-    disableInsert();
+  
     runningProcesses++;
 
     //RESETS, now normal users can insert again
     localStorage.removeItem("user");
-    userId = localStorage.getItem('user');
+    //userId = localStorage.getItem('user');
     
     //add id to deleted id's
     deletedIds.push(id);
  
     SHOW_problems_addedProblems_deletedIds_SHOW();
 
-         fetch(dbUrl + "/" + id, {
+    fetch(dbUrl + "/problems" + "/" + id, {
 
              method: "delete",
              headers: {
@@ -234,7 +302,7 @@ function dataProblemAddedOpdated(id, date, method, addedProblemsId ) {
     }
 
     let body = { "problem_added": date };
-    fetch(dbUrl + "/" + id + "?metafields=true", {
+    fetch(dbUrl + "/problems" + "/" + id + "?metafields=true", {
         method: "PATCH",
         headers: {
             "Content-Type": "application/json; charset=utf-8",
@@ -258,10 +326,17 @@ function dataProblemAddedOpdated(id, date, method, addedProblemsId ) {
         });
 
 }
-
 function dropdownListChosenRow(event, idProblemHelper) {
     console.log("dropdownListChosenRow", idProblemHelper);
     //This function sets what happens on change of dropdown
+
+    document.querySelector("#problem  [data-content=name]").classList.add("disabled_textfield");
+    document.querySelector("#problem  [data-content=problem_short]").classList.remove("disabled_textfield");
+    document.querySelector("#problem  [data-content=problem_long]").classList.remove("disabled_textfield");
+
+    document.querySelector("#problem  [data-content=name]").disabled = true;
+    document.querySelector("#problem  [data-content=problem_short]").disabled = false;
+    document.querySelector("#problem  [data-content=problem_long]").disabled = false;
 
     //update button gets id from helper
     document.querySelector("#updateBtn").dataset.id = idProblemHelper;
@@ -269,9 +344,9 @@ function dropdownListChosenRow(event, idProblemHelper) {
     console.log("chosen: ", chosen)
 
     //content from helper is put in place
-    document.querySelector("  [data-content=name]").value = chosen[0].problem_owner;
-    document.querySelector("  [data-content=problem_short]").value = chosen[0].problem_short;
-    document.querySelector("  [data-content=problem_long]").value = chosen[0].problem_long;
+    document.querySelector("#problem  [data-content=name]").value = chosen[0].problem_owner;
+    document.querySelector("#problem  [data-content=problem_short]").value = chosen[0].problem_short;
+    document.querySelector("#problem  [data-content=problem_long]").value = chosen[0].problem_long;
 
     
 
@@ -303,66 +378,46 @@ function getUrlVars() {
     return vars;
 }
 function disableInsert() {
-    if (userId != null && superUserId == null) {
-        document.querySelector("#insertDialogShow").classList.add("disabled");
-        document.querySelector("#insertDialogShow").removeEventListener("click", insertDialogShow);
+    document.querySelector("#insertDialogShow").classList.add("disabled");
+    document.querySelector("#insertDialogShow").removeEventListener("click", insertDialogShow);
 
-    } 
-    // else if (superUserId != null){
-    //     document.querySelector("#insertDialogShow").classList.remove("disabled");
-    //     document.querySelector("#insertDialogShow").addEventListener("click", insertDialogShow)
-    // }
-    
-    else{
+    if (localStorage.getItem('user') === null || mySuperUserPassword != "") {
         document.querySelector("#insertDialogShow").classList.remove("disabled");
         document.querySelector("#insertDialogShow").addEventListener("click", insertDialogShow)
-    };
+
+    } 
+   
 }
 
-// function problemsSort(){
-//     problems.sort(function (a, b) {
-//         var x = a.problem_added.toLowerCase();
-//         var y = b.problem_added.toLowerCase();
-//         if (x < y) { return -1; }
-//         if (x > y) { return 1; }
-//         return 0;
-//     });
-// }
-
-
-
 ///------------------------------------DOM funktioner-----------------------------------------------
-
-
 
 function closeDialog() {
     //console.log("dialogClose");
 
     document.querySelector("#dialog").classList.add("hide");
 
-   // document.querySelector("#insertBtn").classList.add("hide");
-    //document.querySelector("#delete").classList.add("hide");
-
     document.querySelector("  [data-content=name]").value = "";
     document.querySelector("  [data-content=problem_short]").value = "";
     document.querySelector(" [data-content=problem_long]").value = "";
-
- 
-
-
 }
-
 function buildBodyFromForm() {
     //console.log('insert');
+    if (mySuperUserPassword != "") {
+        document.querySelector("#insertDialogShow").classList.remove("disabled");
+        document.querySelector("#insertDialogShow").addEventListener("click", insertDialogShow)
 
-    let problem_owner = document.querySelector("  [data-content=name]").value;
-    let problem_short = document.querySelector("  [data-content=problem_short]").value;
-    let problem_long = document.querySelector(" [data-content=problem_long]").value;
+    } 
+
+    
+
+    let problem_owner = document.querySelector("#problem  [data-content=name]").value;
+    let problem_short = document.querySelector("#problem   [data-content=problem_short]").value;
+    let problem_long = document.querySelector("#problem  [data-content=problem_long]").value;
     const now = new Date();
     problem_added = now.toISOString();
     //2 next lines updates my problem
     let body = { "problem_owner": problem_owner, "problem_short": problem_short, "problem_long": problem_long, "problem_added": problem_added };
-
+    console.log("buildBodyFromForm :body: ", body)
 
 
     dataInsert(body);
@@ -370,9 +425,27 @@ function buildBodyFromForm() {
 
 }
 
-function insertDialogShow() {
-    //console.log('insertDialogShow');
+function enableInsertDialogShow(){
+    document.querySelector("#problem  [data-content=name]").disabled = false;
+    document.querySelector("#problem  [data-content=problem_short]").disabled = false;
+    document.querySelector("#problem  [data-content=problem_long]").disabled = false;
 
+    document.querySelector("#problem  [data-content=name]").value = "";
+    document.querySelector("#problem  [data-content=problem_short]").value = "";
+    document.querySelector("#problem  [data-content=problem_long]").value = "";
+
+    document.querySelector("#problem  [data-content=name]").classList.remove("disabled_textfield");
+    document.querySelector("#problem  [data-content=problem_short]").classList.remove("disabled_textfield");
+    document.querySelector("#problem  [data-content=problem_long]").classList.remove("disabled_textfield");
+
+}
+
+function insertDialogShow() {
+    console.log('insertDialogShow');
+
+    enableInsertDialogShow()
+
+  
     //SHOW
     document.querySelector("#dialog").classList.remove("hide");
     document.querySelector("#insertBtn").classList.remove("hide");
@@ -391,7 +464,6 @@ function insertDialogShow() {
     document.querySelector("#updateBtn").dataset.id = "";
    
 }
-
 function domDeleteRows(){
     //console.log("deleteRow");
   
@@ -406,34 +478,26 @@ function domShowContent(problems) {
     // document.querySelector("#delete").classList.add("hide");
 
 
-    let template = document.querySelector('#question');
-    let template2 = document.querySelector('#solved_by');
+    let templateProblem = document.querySelector('#question');
+    let templateDropdown = document.querySelector('#solved_by');
 
     //question list
     let qList = document.querySelector("tbody");
     //solvedby list
     let dropdownList = document.querySelector("#selections");
 
-
-
- 
+    let currentProblem = problems.filter(problem => problem._id === localStorage.getItem('user'));
+    
         // Loop
-    problems.forEach((el, i) => {
-       // console.log("i er ", i);
-        let clone = template.content.cloneNode(true);
-        let clone2 = template2.content.cloneNode(true);
+        problems.forEach((el, i) => {
+        let clone = templateProblem.content.cloneNode(true);
+        let clone2 = templateDropdown.content.cloneNode(true);
 
         clone.querySelector("[data-content=name]").textContent = el.problem_owner;
         clone.querySelector("[data-content=problem_short]").innerHTML = `<strong>${el.problem_short}</strong><br> ${el.problem_long} `;
         const date = new Date(el.problem_added);
         clone.querySelector("[data-content=timeInQue]").textContent = format(date);
-        //console.log("id: ", el._id);
         clone.querySelector("[data-content=deleteList]").dataset.id = el._id;
-// console.log("userId", userId)
-//         console.log("el._id", el._id)
-      
-
-
 
 //--------------------------------------Klik på delete/update knap -------------------------------------- 
 
@@ -442,19 +506,28 @@ function domShowContent(problems) {
 //--------------------------------------Klik på delete/update knap slut -------------------------------------- 
 
 
+        
+       
+                clone2.querySelector("option").textContent = el.problem_owner + ": " + el.problem_short;
+                clone2.querySelector("option").dataset.id = el._id;
+                clone2.querySelector("option").value = el._id;
+                 //remove options options if
+            if (localStorage.getItem('user') != null && mySuperUserPassword == ""){
+                if (el.problem_added < currentProblem[0].problem_added ) {
+                        clone2.querySelector("option").remove();
+                    }
+            }
 
-
-        clone2.querySelector("option").textContent = el.problem_owner + ": " + el.problem_short;
-        clone2.querySelector("option").dataset.id = el._id;
-        clone2.querySelector("option").value = el._id;
-
-        if (userId != el._id && superUserId == null) {
-            // console.log("userid3", userId);
-            // console.log("el._id3", el._id)
+        //remove buttons
+        if (localStorage.getItem('user') != el._id && mySuperUserPassword == "") {
+           // clone.querySelector("button.deleteList_1").remove();
+            //clone.querySelector("button.updateList_1").remove();
+            clone.querySelector("[data-title=Update]").textContent="";
+            clone.querySelector("[data-title=Fjern]").textContent="";
            
-            clone.querySelector("button.deleteList_1").remove();
-            clone.querySelector("button.updateList_1").remove();
         }
+
+        
 
         qList.appendChild(clone);
         dropdownList.appendChild(clone2);
@@ -519,6 +592,19 @@ function domShowContent(problems) {
             document.querySelector("#problem").classList.remove("hide");
             document.querySelector("#updateProblem").classList.remove("hide");
 
+            document.querySelector("#problem  [data-content=name]").classList.add("disabled_textfield");
+            document.querySelector("#problem  [data-content=problem_short]").classList.add("disabled_textfield");
+            document.querySelector("#problem  [data-content=problem_long]").classList.add("disabled_textfield");
+
+            document.querySelector("#problem  [data-content=name]").disabled = true;
+            document.querySelector("#problem  [data-content=problem_short]").disabled = true;
+            document.querySelector("#problem  [data-content=problem_long]").disabled = true;
+
+            document.querySelector("#problem  [data-content=name]").value = "";
+            document.querySelector("#problem  [data-content=problem_short]").value = "";
+            document.querySelector("#problem  [data-content=problem_long]").value = "";
+
+            
            
 
 
@@ -536,9 +622,9 @@ function domShowContent(problems) {
 
                 let idProblemOwner = el._id;
                 let problemOwnerAdded = el.problem_added;
-                let problemHelper = document.querySelector("  [data-content=name]").value;
-                let problemHelperShort = document.querySelector("  [data-content=problem_short]").value;
-                let problemHelperLong = document.querySelector(" [data-content=problem_long]").value;
+                let problemHelper = document.querySelector("#problem  [data-content=name]").value;
+                let problemHelperShort = document.querySelector(" #problem  [data-content=problem_short]").value;
+                let problemHelperLong = document.querySelector("#problem  [data-content=problem_long]").value;
 
                 //2 next lines updates my problem
                 let bodyHelper = { "problem_owner": problemHelper, "problem_short": problemHelperShort, "problem_long": problemHelperLong, problem_added: problemOwnerAdded };
@@ -565,3 +651,183 @@ let dropdownListChosen = (event) => {
     dropdownListChosenRow(event, idProblemHelper);
     //console.log("id og problems: ", idProblemHelper, problems)
 };
+
+
+
+
+
+createRoomDomVars.roomName.addEventListener("click", clearFieldRoom);
+createRoomDomVars.roomName.addEventListener("focusout", writeFieldRoom);
+
+function clearFieldRoom() {
+    console.log("clearField");
+    if (createRoomDomVars.roomName.value === "Opret rum") {
+        createRoomDomVars.roomName.value = "";
+        // createRoom.roomName.removeEventListener("click", clearFieldRoom);   
+    }
+}
+function writeFieldRoom() {
+    console.log("writeFieldRoom");
+    if (createRoomDomVars.roomName.value === "") {
+        createRoomDomVars.roomName.value = "Opret rum";
+        //createRoom.roomName.removeEventListener("focusout", clearFieldRoom);
+    }
+}
+
+createRoomDomVars.password.addEventListener("click", clearFieldPassword);
+createRoomDomVars.password.addEventListener("focusout", writeFieldPassword);
+function clearFieldPassword() {
+    console.log("clearFieldPassword");
+    if (createRoomDomVars.password.value === "Opret password") {
+        createRoomDomVars.password.value = "";
+        createRoomDomVars.password.type = "password";
+        //createRoom.roomName.removeEventListener("click", clearFieldPassword);
+    }
+}
+function writeFieldPassword() {
+    console.log("writeFieldPassword");
+    if (createRoomDomVars.password.value === "") {
+        createRoomDomVars.password.value = "Opret password";
+        //createRoom.roomName.removeEventListener("click", clearFieldPassword);
+        createRoomDomVars.password.type = "text";
+    }
+}
+createRoomDomVars.button.addEventListener("click", createRoomCheckBefore);
+
+function createRoomCheckBefore() {
+    console.log("createRoomCheckBefore");
+
+    //check that both room and password is filled. Otherwise make them red
+    if (createRoomDomVars.password.value === "Opret password" || createRoomDomVars.roomName.value === "Opret rum") {
+        console.log("either or");
+        if (createRoomDomVars.password.value === "Opret password") {
+            console.log("password not changed");
+            createRoomDomVars.password.classList.add("warning");
+        } else {
+            createRoomDomVars.password.classList.remove("warning");
+        }
+        if (createRoomDomVars.roomName.value === "Opret rum") {
+            console.log("room not changed");
+            createRoomDomVars.roomName.classList.add("warning");
+
+        } else {
+            createRoomDomVars.roomName.classList.remove("warning");
+        }
+
+    } else {
+        createRoomDomVars.roomName.classList.remove("warning");
+        createRoomDomVars.password.classList.remove("warning");
+        //checkRoomExists(createRoomDomVars.roomName.value);
+
+        if (checkRoomExists(createRoomDomVars.roomName.value)){
+            console.log("RUMMET EXISTERER ALLEREDE");
+
+        } else {
+            dataCreateRoom();
+            console.log("RUMMET EXISTERER IKKE ALLEREDE");
+        }
+
+    }
+
+
+
+
+
+    // if room dosent exist, make it
+    //put createRoomDomVars.roomName && createRoomDomVars.password in database
+
+    newUrlAndQr();
+
+
+   // roomIsSet();
+
+}
+
+
+function dataCreateRoom() {
+    // check that createRoomDomVars.roomName is not in database
+    fetch(dbUrl + "/rooms", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json; charset=utf-8",
+            "x-apikey": apikey,
+            "cache-control": "no-cache"
+        },
+        body: JSON.stringify({
+            "roomname": createRoomDomVars.roomName.value,
+            "password": createRoomDomVars.password.value
+        }),
+        json: true
+    }).then(e => e.json())
+        .then(e => {
+            console.log("room insertet");
+
+            //save superuserpassword in localstorrage
+            localStorage.setItem("superuserPassword", createRoomDomVars.password.value);
+            checkRoomExists();
+
+            newUrlAndQr();
+            roomIsSet();
+        })
+
+
+
+
+};
+
+function newUrlAndQr() {
+    newUrl();
+    newQr();
+    
+}
+
+function newUrl() {
+    console.log("newUrl", createRoomDomVars.password.value);
+    //when done set localStorage superuserPassword and redirect to an url *?room=reateRoomDomVars.roomName
+    
+    
+
+    //næste linielaver ny url
+    window.history.pushState("index.html", "Title", "?room=" + createRoomDomVars.roomName.value);
+    //insert new url i variable
+    createRoomDomVars.UrlRoom = getUrlVars()["room"];
+}
+function newQr() {//generate qr code
+    document.getElementById("qrcode").textContent = "";
+
+    var qrcode = new QRCode(document.getElementById("qrcode"), {
+        text: window.location.href,
+        width: 140,
+        height: 140,
+        colorDark: "#000000",
+        colorLight: "#ffffff",
+        correctLevel: QRCode.CorrectLevel.H
+    });}
+
+function roomIsSet() {
+    console.log("roomIsSet")
+    //newUrlAndQr();
+    newQr();
+
+    if (createRoomDomVars.UrlRoom != null) {
+        console.log("roomIsSet room is:", createRoomDomVars.UrlRoom)
+        //disable create room
+        createRoomDomVars.buttons.classList.add("hide");
+        //unhide table
+        console.log("remove hide from que");
+        createRoomDomVars.que.classList.remove("hide");
+        //hide table
+    }
+    else {
+        console.log("roomIsSet no room:")
+        //enable create room
+        setInterval(dataGet, 10000);
+         createRoomDomVars.buttons.classList.remove("hide");
+        //unhide table
+        createRoomDomVars.que.classList.add("hide");
+    }
+
+
+}
+
+
