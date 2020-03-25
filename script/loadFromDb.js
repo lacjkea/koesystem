@@ -57,7 +57,7 @@ function checkRoomExists() {
                 start();
 
                 //add current url to header
-                document.querySelector("#que > table > caption > span").textContent +=" "+ window.location.href;
+                document.querySelector("#que > table > caption > span").textContent = window.location.href;
 
 
 
@@ -719,13 +719,15 @@ function createRoomCheckBefore() {
         createRoomDomVars.password.classList.remove("warning");
         //checkRoomExists(createRoomDomVars.roomName.value);
 
-        if (checkRoomExists(createRoomDomVars.roomName.value)){
-            console.log("RUMMET EXISTERER ALLEREDE");
 
-        } else {
-            dataCreateRoom();
-            console.log("RUMMET EXISTERER IKKE ALLEREDE");
-        }
+        dataCreateRoom();
+        // if (checkRoomExists(createRoomDomVars.roomName.value)){
+        //     console.log("RUMMET EXISTERER ALLEREDE");
+
+        // } else {
+        //     dataCreateRoom();
+        //     console.log("RUMMET EXISTERER IKKE ALLEREDE");
+        // }
 
     }
 
