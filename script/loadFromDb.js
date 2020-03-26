@@ -994,6 +994,11 @@ function createRoom(){
 function gotoRoom() {
     document.querySelector("#loading").classList.remove("hide");
     console.log("gotoRoom");
+
+    //nulstill superuser 
+    localStorage.setItem("superuserPassword", "");
+
+
     window.history.pushState("index.html", "Title", location.pathname + "?room=" + domData.roomName.value);
     checkRoomExists();
 
@@ -1001,9 +1006,14 @@ function gotoRoom() {
 }
 
 function adminRoom(){
-    //document.querySelector("#loading").classList.remove("hide");
+    document.querySelector("#loading").classList.remove("hide");
     // domData.roomName.value
     // if document.querySelector("#room_password").value
+
+    //document.querySelector("#room_password").focus();
+    //document.querySelector("#room_password").select();
+
+
 
     let roomtaken = rooms.filter(room => room.roomname === domData.roomName.value);
     //console.log("roomtaken:", roomtaken);
