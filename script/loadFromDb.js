@@ -1006,7 +1006,7 @@ function gotoRoom() {
 }
 
 function adminRoom(){
-    document.querySelector("#loading").classList.remove("hide");
+    //document.querySelector("#loading").classList.remove("hide");
     // domData.roomName.value
     // if document.querySelector("#room_password").value
 
