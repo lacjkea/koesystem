@@ -18,12 +18,22 @@
     <header>    
       <div id="qrcode"></div>
       <div id="createroom">
-        <!-- <form> -->
-        <input type="text" data-create ="room" value="Opret rum">
-        <input type="text" data-create ="room_password" value="Opret password">
+        <form autocomplete="off" >
+           <div class="autocomplete" >
+               <input id="inputRoom" type="text" name="room"   data-create ="room" value="Intast rum" >
+          </div>
+
+
+     
+        <input type="text" data-create ="room_password" value="" class="disabled_textfield" id="room_password">
         <br>
-        <button class="myButton ">Opret rum</button>
-        <!-- </form> -->
+        
+         <div id="createroomButtonBox">
+          <button id="adminRoomBtn" class="myButton disabled" type="button"> Admin</button>
+          <button id="createRoomBtn" class="myButton disabled " type="button">Opret</button>
+          <button id="gotoRoomBtn" class="myButton disabled" type="button">Gå til rum</button>
+        </div>
+        </form>
       </div>
 
     </header>

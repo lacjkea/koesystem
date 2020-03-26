@@ -13,14 +13,14 @@ let runningProcesses = 0;
 
 setInterval(dataGet, 10000);
 
-const createRoomDomVars ={};
-createRoomDomVars.roomName =document.querySelector("#createroom [data-create=room]");
-createRoomDomVars.password = document.querySelector("#createroom  [data-create=room_password]")
-createRoomDomVars.button = document.querySelector("#createroom  button");
-createRoomDomVars.buttons = document.querySelector("#createroom");
+const domData ={};
+domData.roomName =document.querySelector("#createroom [data-create=room]");
+domData.password = document.querySelector("#createroom  [data-create=room_password]")
+//createRoomDomVars.button = document.querySelector("#createroom  button");
+domData.buttons = document.querySelector("#createroom");
 
-createRoomDomVars.UrlRoom;
-createRoomDomVars.que = document.querySelector("#que");
+domData.UrlRoom;
+domData.que = document.querySelector("#que");
 
 
 
@@ -40,6 +40,15 @@ function checkRoomExists() {
             rooms = e;
 
 
+            let myRooms = rooms.map(room => room.roomname);
+          
+            
+
+            /*initiate the autocomplete function on the "inputRoom" element, and pass along the countries array as possible autocomplete values:*/
+            autocomplete(document.getElementById("inputRoom"), myRooms);
+            console.log("rooms.roomname", myRooms);
+
+
             let roomtaken = rooms.filter(room => room.roomname === getUrlVars()["room"]);
             //console.log("roomtaken:", roomtaken);
 
@@ -47,7 +56,7 @@ function checkRoomExists() {
                 //that is there is a room allready
 
                 //SETS A VARIABLE
-                createRoomDomVars.UrlRoom = getUrlVars()["room"];
+                domData.UrlRoom = getUrlVars()["room"];
                 currentQueSuperUserPassword = roomtaken[0].password;
 
                 //currentQueSuperUserPassword 
@@ -83,6 +92,19 @@ function checkRoomExists() {
 };
 function start() {
     console.log('start');
+    
+    // document.querySelector("#gotoRoomBtn").classList.add("disabled");
+    // document.querySelector("#gotoRoomBtn").disabled = true;
+    // document.querySelector("#createRoomBtn").classList.add("disabled");
+    // document.querySelector("#createRoomBtn").disabled = true;
+    // document.querySelector("#adminRoomBtn").classList.add("disabled");
+    // document.querySelector("#adminRoomBtn").disabled = true;
+
+
+
+
+
+    document.querySelector("#inputRoom").oninput = roomCheck;
     tempId =1;
     //getUrlVars();
        
@@ -111,7 +133,7 @@ function SHOW_problems_addedProblems_deletedIds_SHOW() {
     domDeleteRows();
     //show all
     domShowContent(problemsWithoutDeleteditems);
-    document.querySelector("#loading").classList.add("hide");
+    
 
 }
 function dataGet(justAddedId){
@@ -646,6 +668,7 @@ function domShowContent(problems) {
         }
     });
 
+    document.querySelector("#loading").classList.add("hide");
 }
   //CHANGE dropdown with parameters
 let dropdownListChosen = (event) => {
@@ -659,113 +682,14 @@ let dropdownListChosen = (event) => {
 
 
 
-createRoomDomVars.roomName.addEventListener("click", clearFieldRoom);
-createRoomDomVars.roomName.addEventListener("focusout", writeFieldRoom);
-
-function clearFieldRoom() {
-    console.log("clearFieldRoom");
-
-
-
-    
-   
-    if (createRoomDomVars.roomName.value.includes("Opret rum") || createRoomDomVars.roomName.value.includes("allerede")) {
-        createRoomDomVars.roomName.value = "";
-        // createRoom.roomName.removeEventListener("click", clearFieldRoom);   
-    }
-}
-function writeFieldRoom() {
-    console.log("writeFieldRoom");
-    if (createRoomDomVars.roomName.value === "") {
-        createRoomDomVars.roomName.value = "Opret rum";
-        //createRoom.roomName.removeEventListener("focusout", clearFieldRoom);
-    }
-}
-
-createRoomDomVars.password.addEventListener("focusin", clearFieldPassword);
-createRoomDomVars.password.addEventListener("focusout", writeFieldPassword);
-function clearFieldPassword() {
-    console.log("clearFieldPassword");
-    if (createRoomDomVars.password.value === "Opret password") {
-        createRoomDomVars.password.value = "";
-        createRoomDomVars.password.type = "password";
-        //createRoom.roomName.removeEventListener("click", clearFieldPassword);
-    }
-}
-function writeFieldPassword() {
-    console.log("writeFieldPassword");
-    if (createRoomDomVars.password.value === "") {
-        createRoomDomVars.password.value = "Opret password";
-        //createRoom.roomName.removeEventListener("click", clearFieldPassword);
-        createRoomDomVars.password.type = "text";
-    }
-}
-createRoomDomVars.button.addEventListener("click", createRoomCheckBefore);
-
-function createRoomCheckBefore() {
-    console.log("createRoomCheckBefore");
-
-    //check that both room and password is filled. Otherwise make them red
-    if (createRoomDomVars.password.value === "Opret password" || createRoomDomVars.roomName.value === "Opret rum") {
-        //console.log("either or");
-        if (createRoomDomVars.password.value === "Opret password") {
-            console.log("password not changed");
-            createRoomDomVars.password.classList.add("warning");
-        } else {
-            createRoomDomVars.password.classList.remove("warning");
-        }
-        if (createRoomDomVars.roomName.value === "Opret rum") {
-           // console.log("room not changed");
-            createRoomDomVars.roomName.classList.add("warning");
-
-        } else {
-            createRoomDomVars.roomName.classList.remove("warning");
-        }
-
-    } else {
-        createRoomDomVars.roomName.classList.remove("warning");
-        createRoomDomVars.password.classList.remove("warning");
-        //checkRoomExists(createRoomDomVars.roomName.value);
-
-
-        let roomscheck = rooms.filter(room => room.roomname === createRoomDomVars.roomName.value)
-
-
-        if (roomscheck.length > 0) {       //find ud af om rummet existerer
-            console.log("RUMMET EXISTERER ALLEREDE2");
-            
-
-            createRoomDomVars.roomName.classList.add("warning");
-           
-            //createRoomDomVars.roomName.vaule += " - Rummet eksisterer allerede";
-            
-            createRoomDomVars.roomName.value += " - Rummet eksisterer allerede";
-
-        } else {
-
-            console.log("RUMMET EXISTERER IKKE ALLEREDE");
-            dataCreateRoom();
-
-        }
-    }
-
-
-
-
-
-    // if room dosent exist, make it
-    //put createRoomDomVars.roomName && createRoomDomVars.password in database
-
-    newUrlAndQr();
-
-
-   // roomIsSet();
-
-}
 
 
 function dataCreateRoom() {
     // check that createRoomDomVars.roomName is not in database
+    document.querySelector("#createRoomBtn").removeEventListener("click", createRoom);
+
+    document.querySelector("#loading").classList.remove("hide");
+
     fetch(dbUrl + "/rooms", {
         method: "POST",
         headers: {
@@ -774,8 +698,8 @@ function dataCreateRoom() {
             "cache-control": "no-cache"
         },
         body: JSON.stringify({
-            "roomname": createRoomDomVars.roomName.value,
-            "password": createRoomDomVars.password.value
+            "roomname": domData.roomName.value,
+            "password": domData.password.value
         }),
         json: true
     }).then(e => e.json())
@@ -783,7 +707,7 @@ function dataCreateRoom() {
             //console.log("room insertet");
 
             //save superuserpassword in localstorrage
-            localStorage.setItem("superuserPassword", createRoomDomVars.password.value);
+            localStorage.setItem("superuserPassword", domData.password.value);
             checkRoomExists();
 
             newUrlAndQr();
@@ -802,52 +726,414 @@ function newUrlAndQr() {
 }
 
 function newUrl() {
-    console.log("newUrl", createRoomDomVars.password.value);
+    console.log("newUrl", domData.password.value);
     //when done set localStorage superuserPassword and redirect to an url *?room=reateRoomDomVars.roomName
     
     
 
     //næste linielaver ny url
-    window.history.pushState("index.html", "Title", location.pathname +"?room=" + createRoomDomVars.roomName.value);
+    window.history.pushState("index.html", "Title", location.pathname +"?room=" + domData.roomName.value);
     //insert new url i variable
-    createRoomDomVars.UrlRoom = getUrlVars()["room"];
+    domData.UrlRoom = getUrlVars()["room"];
 }
 function newQr() {//generate qr code
-    document.getElementById("qrcode").textContent = "";
 
-    var qrcode = new QRCode(document.getElementById("qrcode"), {
-        text: window.location.href,
-        width: 140,
-        height: 140,
-        colorDark: "#000000",
-        colorLight: "#ffffff",
-        correctLevel: QRCode.CorrectLevel.H
-    });}
+    document.getElementById("qrcode").textContent = "";
+    if (getUrlVars()["room"] != undefined){
+
+        var qrcode = new QRCode(document.getElementById("qrcode"), {
+            text: window.location.href,
+            width: 140,
+            height: 140,
+            colorDark: "#000000",
+            colorLight: "#ffffff",
+            correctLevel: QRCode.CorrectLevel.H
+        });
+    }
+}
 
 function roomIsSet() {
     console.log("roomIsSet")
     //newUrlAndQr();
     newQr();
 
-    if (createRoomDomVars.UrlRoom != null) {
+    if (domData.UrlRoom != null) {
         //console.log("roomIsSet room is:", createRoomDomVars.UrlRoom)
         //disable create room
-        createRoomDomVars.buttons.classList.add("hide");
+        domData.buttons.classList.add("hide");
         //unhide table
         //console.log("remove hide from que");
-        createRoomDomVars.que.classList.remove("hide");
+        domData.que.classList.remove("hide");
         //hide table
     }
     else {
         //console.log("roomIsSet no room:")
         //enable create room
         setInterval(dataGet, 10000);
-         createRoomDomVars.buttons.classList.remove("hide");
+         domData.buttons.classList.remove("hide");
         //unhide table
-        createRoomDomVars.que.classList.add("hide");
+        domData.que.classList.add("hide");
     }
 
 
 }
 
 
+
+
+
+
+function autocomplete(inp, arr) {
+    /*the autocomplete function takes two arguments,
+    the text field element and an array of possible autocompleted values:*/
+    var currentFocus;
+    /*execute a function when someone writes in the text field:*/
+    inp.addEventListener("input", function (e) {
+        var a, b, i, val = this.value;
+        /*close any already open lists of autocompleted values*/
+        closeAllLists();
+        if (!val) { return false; }
+        currentFocus = -1;
+        /*create a DIV element that will contain the items (values):*/
+        a = document.createElement("DIV");
+        a.setAttribute("id", this.id + "autocomplete-list");
+        a.setAttribute("class", "autocomplete-items");
+        /*append the DIV element as a child of the autocomplete container:*/
+        this.parentNode.appendChild(a);
+        /*for each item in the array...*/
+        for (i = 0; i < arr.length; i++) {
+            /*check if the item starts with the same letters as the text field value:*/
+            if (arr[i].substr(0, val.length).toUpperCase() == val.toUpperCase()) {
+                /*create a DIV element for each matching element:*/
+                b = document.createElement("DIV");
+                /*make the matching letters bold:*/
+                b.innerHTML = "<strong>" + arr[i].substr(0, val.length) + "</strong>";
+                b.innerHTML += arr[i].substr(val.length);
+                /*insert a input field that will hold the current array item's value:*/
+                b.innerHTML += "<input type='hidden' value='" + arr[i] + "'>";
+                /*execute a function when someone clicks on the item value (DIV element):*/
+                b.addEventListener("click", function (e) {
+                    /*insert the value for the autocomplete text field:*/
+                    inp.value = this.getElementsByTagName("input")[0].value;
+                    /*close the list of autocompleted values,
+                    (or any other open lists of autocompleted values:*/
+                    closeAllLists();
+                });
+                a.appendChild(b);
+            }
+        }
+    });
+    /*execute a function presses a key on the keyboard:*/
+    inp.addEventListener("keydown", function (e) {
+        var x = document.getElementById(this.id + "autocomplete-list");
+        if (x) x = x.getElementsByTagName("div");
+        if (e.keyCode == 40) {
+            /*If the arrow DOWN key is pressed,
+            increase the currentFocus variable:*/
+            currentFocus++;
+            /*and and make the current item more visible:*/
+            addActive(x);
+        } else if (e.keyCode == 38) { //up
+            /*If the arrow UP key is pressed,
+            decrease the currentFocus variable:*/
+            currentFocus--;
+            /*and and make the current item more visible:*/
+            addActive(x);
+        } else if (e.keyCode == 13) {
+            /*If the ENTER key is pressed, prevent the form from being submitted,*/
+            //and send value
+            
+            e.preventDefault();
+            
+
+            if (currentFocus > -1) {
+                /*and simulate a click on the "active" item:*/
+                if (x) x[currentFocus].click();
+            }
+            roomCheck(e);
+        }
+    });
+    function addActive(x) {
+        /*a function to classify an item as "active":*/
+        if (!x) return false;
+        /*start by removing the "active" class on all items:*/
+        removeActive(x);
+        if (currentFocus >= x.length) currentFocus = 0;
+        if (currentFocus < 0) currentFocus = (x.length - 1);
+        /*add class "autocomplete-active":*/
+        x[currentFocus].classList.add("autocomplete-active");
+    }
+    function removeActive(x) {
+        /*a function to remove the "active" class from all autocomplete items:*/
+        for (var i = 0; i < x.length; i++) {
+            x[i].classList.remove("autocomplete-active");
+        }
+    }
+    function closeAllLists(elmnt) {
+        /*close all autocomplete lists in the document,
+        except the one passed as an argument:*/
+        var x = document.getElementsByClassName("autocomplete-items");
+        for (var i = 0; i < x.length; i++) {
+            if (elmnt != x[i] && elmnt != inp) {
+                x[i].parentNode.removeChild(x[i]);
+            }
+        }
+    }
+    /*execute a function when someone clicks in the document:*/
+    document.addEventListener("click", function (e) {
+        closeAllLists(e.target);
+    });
+}
+
+/*An array containing all the country names in the world:*/
+//var countries = ["Afghanistan", "Albania", "Algeria", "Andorra", "Angola", "Anguilla", "Antigua & Barbuda", "Argentina", "Armenia", "Aruba", "Australia", "Austria", "Azerbaijan", "Bahamas", "Bahrain", "Bangladesh", "Barbados", "Belarus", "Belgium", "Belize", "Benin", "Bermuda", "Bhutan", "Bolivia", "Bosnia & Herzegovina", "Botswana", "Brazil", "British Virgin Islands", "Brunei", "Bulgaria", "Burkina Faso", "Burundi", "Cambodia", "Cameroon", "Canada", "Cape Verde", "Cayman Islands", "Central Arfrican Republic", "Chad", "Chile", "China", "Colombia", "Congo", "Cook Islands", "Costa Rica", "Cote D Ivoire", "Croatia", "Cuba", "Curacao", "Cyprus", "Czech Republic", "Denmark", "Djibouti", "Dominica", "Dominican Republic", "Ecuador", "Egypt", "El Salvador", "Equatorial Guinea", "Eritrea", "Estonia", "Ethiopia", "Falkland Islands", "Faroe Islands", "Fiji", "Finland", "France", "French Polynesia", "French West Indies", "Gabon", "Gambia", "Georgia", "Germany", "Ghana", "Gibraltar", "Greece", "Greenland", "Grenada", "Guam", "Guatemala", "Guernsey", "Guinea", "Guinea Bissau", "Guyana", "Haiti", "Honduras", "Hong Kong", "Hungary", "Iceland", "India", "Indonesia", "Iran", "Iraq", "Ireland", "Isle of Man", "Israel", "Italy", "Jamaica", "Japan", "Jersey", "Jordan", "Kazakhstan", "Kenya", "Kiribati", "Kosovo", "Kuwait", "Kyrgyzstan", "Laos", "Latvia", "Lebanon", "Lesotho", "Liberia", "Libya", "Liechtenstein", "Lithuania", "Luxembourg", "Macau", "Macedonia", "Madagascar", "Malawi", "Malaysia", "Maldives", "Mali", "Malta", "Marshall Islands", "Mauritania", "Mauritius", "Mexico", "Micronesia", "Moldova", "Monaco", "Mongolia", "Montenegro", "Montserrat", "Morocco", "Mozambique", "Myanmar", "Namibia", "Nauro", "Nepal", "Netherlands", "Netherlands Antilles", "New Caledonia", "New Zealand", "Nicaragua", "Niger", "Nigeria", "North Korea", "Norway", "Oman", "Pakistan", "Palau", "Palestine", "Panama", "Papua New Guinea", "Paraguay", "Peru", "Philippines", "Poland", "Portugal", "Puerto Rico", "Qatar", "Reunion", "Romania", "Russia", "Rwanda", "Saint Pierre & Miquelon", "Samoa", "San Marino", "Sao Tome and Principe", "Saudi Arabia", "Senegal", "Serbia", "Seychelles", "Sierra Leone", "Singapore", "Slovakia", "Slovenia", "Solomon Islands", "Somalia", "South Africa", "South Korea", "South Sudan", "Spain", "Sri Lanka", "St Kitts & Nevis", "St Lucia", "St Vincent", "Sudan", "Suriname", "Swaziland", "Sweden", "Switzerland", "Syria", "Taiwan", "Tajikistan", "Tanzania", "Thailand", "Timor L'Este", "Togo", "Tonga", "Trinidad & Tobago", "Tunisia", "Turkey", "Turkmenistan", "Turks & Caicos", "Tuvalu", "Uganda", "Ukraine", "United Arab Emirates", "United Kingdom", "United States of America", "Uruguay", "Uzbekistan", "Vanuatu", "Vatican City", "Venezuela", "Vietnam", "Virgin Islands (US)", "Yemen", "Zambia", "Zimbabwe"];
+
+function roomCheck(e){
+    document.querySelector("#adminRoomBtn").classList.add("disabled");
+    document.querySelector("#adminRoomBtn").disabled = true;
+    
+    let myRooms = rooms.map(room => room.roomname);
+    
+    console.log("e.value)", e.target.value);
+    //check if dropdown of exixting rooms is gone
+    if (myRooms.includes(e.target.value)){
+
+
+        //then we have an exixting room
+
+        // if room exists activate goto AND admin
+        //if goto is activated goto URL +?room=xxxx
+        //if admin clicked activate password with the text enter admin password
+        console.log("existing ROOM");
+
+        document.querySelector("#gotoRoomBtn").classList.remove("disabled");
+        document.querySelector("#gotoRoomBtn").disabled = false;
+        document.querySelector("#gotoRoomBtn").addEventListener("click", gotoRoom);
+
+
+        document.querySelector("#createRoomBtn").classList.add("disabled");
+        document.querySelector("#createRoomBtn").disabled = true;
+        
+
+        document.querySelector("#adminRoomBtn").classList.remove("disabled");
+        document.querySelector("#adminRoomBtn").disabled = false;
+        document.querySelector("#adminRoomBtn").addEventListener("click", adminRoom);
+
+        document.querySelector("#room_password").classList.add("disabled_textfield");
+        document.querySelector("#room_password").disabled = true;
+        document.querySelector("#room_password").value = ""
+
+
+        
+        
+
+
+    } else{
+
+
+        //Then we will create a new room
+        // if room dont exist activat opret and dactivate others
+        // when opret is clicked Activate password with the text "opret admin password"
+        console.log("new ROOM");
+
+        document.querySelector("#gotoRoomBtn").classList.add("disabled");
+        document.querySelector("#gotoRoomBtn"). disabled = true;
+
+        document.querySelector("#createRoomBtn").classList.remove("disabled");
+        document.querySelector("#createRoomBtn").disabled =false;
+        document.querySelector("#createRoomBtn").addEventListener("click", createRoom);
+    
+
+
+
+        document.querySelector("#adminRoomBtn").classList.add("disabled");
+        document.querySelector("#adminRoomBtn").disabled = true;
+
+        document.querySelector("#room_password").classList.remove("disabled_textfield");
+        document.querySelector("#room_password").disabled = false;
+        document.querySelector("#room_password").placeholder = "Opret password"
+        
+
+    }
+   
+    
+    
+            
+
+
+
+
+
+
+
+
+}
+
+function createRoom(){
+    //document.querySelector("#createRoomBtn").removeEventListener("click", createRoom);
+    document.querySelector("#room_password").oninput = createRoom;
+    if (document.querySelector("#room_password").value != "") {
+        document.querySelector("#createRoomBtn").classList.remove("disabled");
+        document.querySelector("#createRoomBtn").disabled = false;
+        document.querySelector("#createRoomBtn").addEventListener("click", dataCreateRoom);
+    } else {
+        document.querySelector("#room_password").classList.add("warning");
+        document.querySelector("#createRoomBtn").classList.add("disabled");
+        document.querySelector("#createRoomBtn").disabled = true;
+    }
+    
+}
+
+function gotoRoom() {
+    document.querySelector("#loading").classList.remove("hide");
+    console.log("gotoRoom");
+    window.history.pushState("index.html", "Title", location.pathname + "?room=" + domData.roomName.value);
+    checkRoomExists();
+
+
+}
+
+function adminRoom(){
+    //document.querySelector("#loading").classList.remove("hide");
+    // domData.roomName.value
+    // if document.querySelector("#room_password").value
+
+    let roomtaken = rooms.filter(room => room.roomname === domData.roomName.value);
+    //console.log("roomtaken:", roomtaken);
+
+    currentQueSuperUserPassword = roomtaken[0].password;
+
+    
+        
+
+
+    document.querySelector("#room_password").classList.remove("disabled_textfield");
+    document.querySelector("#room_password").disabled = false;
+    document.querySelector("#room_password").placeholder = "Intast rummets password";
+   // document.querySelector("#room_password").classList.add("warning");
+
+    if (domData.password.value === currentQueSuperUserPassword) {
+        //SETS A VARIABLE
+        localStorage.setItem("superuserPassword", domData.password.value);
+        console.log("nyt localstorrage af superuserpassword")
+        document.querySelector("#loading").classList.remove("hide");
+        window.history.pushState("index.html", "Title", location.pathname + "?room=" + domData.roomName.value);
+        checkRoomExists();
+    } else if (domData.password.value != "") {
+        document.querySelector("#room_password").classList.add("warning");
+        document.querySelector("#room_password").placeholder =  "FORKERT - prøv igen";
+        document.querySelector("#room_password").value = "";
+    }
+
+   
+
+    document.querySelector("#gotoRoomBtn").classList.add("disabled");
+    document.querySelector("#gotoRoomBtn").disabled = true;
+}
+
+
+
+domData.roomName.addEventListener("click", clearFieldRoom);
+domData.roomName.addEventListener("focusout", writeFieldRoom);
+
+function clearFieldRoom() {
+    console.log("clearFieldRoom");
+
+    if (domData.roomName.value.includes("Intast rum") || domData.roomName.value.includes("allerede")) {
+        domData.roomName.value = "";
+        // createRoom.roomName.removeEventListener("click", clearFieldRoom);   
+    }
+}
+function writeFieldRoom() {
+    console.log("writeFieldRoom");
+    if (domData.roomName.value === "") {
+        domData.roomName.value = "Intast rum";
+        //createRoom.roomName.removeEventListener("focusout", clearFieldRoom);
+    }
+}
+
+domData.password.addEventListener("focusin", clearFieldPassword);
+domData.password.addEventListener("focusout", writeFieldPassword);
+
+
+function clearFieldPassword() {
+    console.log("clearFieldPassword");
+    //if (domData.password.value === "Opret password") {
+        domData.password.value = "";
+        domData.password.type = "password";
+    domData.password.classList.remove("warning");
+   // domData.password.placeholder = "Intast password";
+    
+        //createRoom.roomName.removeEventListener("click", clearFieldPassword);
+    //}
+}
+function writeFieldPassword() {
+    console.log("writeFieldPassword");
+    if (domData.password.value === "") {
+        domData.password.placeholder = "Opret password";
+        //createRoom.roomName.removeEventListener("click", clearFieldPassword);
+        domData.password.type = "text";
+    }
+}
+//createRoomDomVars.button.addEventListener("click", createRoomCheckBefore);
+
+// function createRoomCheckBefore() {
+//     console.log("createRoomCheckBefore");
+
+//     //check that both room and password is filled. Otherwise make them red
+//     if (domData.password.value === "Opret password" || domData.roomName.value === "Intast rum") {
+//         //console.log("either or");
+//         if (domData.password.value === "Opret password") {
+//             console.log("password not changed");
+//             domData.password.classList.add("warning");
+//         } else {
+//             domData.password.classList.remove("warning");
+//         }
+//         if (domData.roomName.value === "Intast rum") {
+//             // console.log("room not changed");
+//             domData.roomName.classList.add("warning");
+
+//         } else {
+//             domData.roomName.classList.remove("warning");
+//         }
+
+//     } else {
+//         domData.roomName.classList.remove("warning");
+//         domData.password.classList.remove("warning");
+//         //checkRoomExists(createRoomDomVars.roomName.value);
+
+
+//         let roomscheck = rooms.filter(room => room.roomname === domData.roomName.value)
+
+
+//         if (roomscheck.length > 0) {       //find ud af om rummet existerer
+//             console.log("RUMMET EXISTERER ALLEREDE2");
+
+
+//             domData.roomName.classList.add("warning");
+
+//             //createRoomDomVars.roomName.vaule += " - Rummet eksisterer allerede";
+
+//             domData.roomName.value += " - Rummet eksisterer allerede";
+
+//         } else {
+
+//             console.log("RUMMET EXISTERER IKKE ALLEREDE");
+//             dataCreateRoom();
+
+//         }
+//     }
+
+
+
+
+
+//     // if room dosent exist, make it
+//     //put createRoomDomVars.roomName && createRoomDomVars.password in database
+
+//     newUrlAndQr();
+
+
+//     // roomIsSet();
+
+// }
