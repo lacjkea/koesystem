@@ -3,6 +3,7 @@ window.addEventListener("load", checkRoomExists);
 let deletedIds = [];
 let tempId;
 let problems = [{}];
+let rooms = [{}];
 //I have set a localstorrage localStorage.getItem('user');
 
 //let mySuperUserPassword = localStorage.getItem("superuserPassword");
@@ -10,7 +11,7 @@ let mySuperUserPassword ="";
 let currentQueSuperUserPassword;
 let runningProcesses = 0;
 
-setInterval(dataGet, 10000);
+//setInterval(dataGet, 10000);
 
 const createRoomDomVars ={};
 createRoomDomVars.roomName =document.querySelector("#createroom [data-create=room]");
@@ -24,7 +25,7 @@ createRoomDomVars.que = document.querySelector("#que");
 
 
 function checkRoomExists() {
-    console.log("checkRoomExists room: ");
+    console.log("checkRoomExists");
     // check that createRoomDomVars.roomName is not in database
     fetch(dbUrl + "/rooms", {
         method: "get",
@@ -37,11 +38,12 @@ function checkRoomExists() {
         .then(e => e.json())
         .then(e => {
             rooms = e;
+            //ONLY RELEVANT WHEN I RELOAD
             let roomtaken = rooms.filter(room => room.roomname === getUrlVars()["room"]);
-            console.log("roomtaken:", roomtaken);
+            //console.log("roomtaken:", roomtaken);
 
             if (roomtaken.length > 0) {
-                //that is there is a room allready
+                //ROOM EXISTS
 
                 //SETS A VARIABLE
                 createRoomDomVars.UrlRoom = getUrlVars()["room"];
@@ -49,22 +51,24 @@ function checkRoomExists() {
 
                 //currentQueSuperUserPassword 
                 if (localStorage.getItem("superuserPassword") === currentQueSuperUserPassword) {
-                    //SETS A VARIABLE
+                    //I am superuser SETS A VARIABLE
                     mySuperUserPassword = currentQueSuperUserPassword;
                 } else {
+                    //i am NOT superuser
                     mySuperUserPassword = "";
                 }
-                start();
+                
 
                 //add current url to header
                 document.querySelector("#que > table > caption > span").textContent = window.location.href;
 
-
+                start();
 
                 //console.log("currentQueSuperUserPassword = roomtaken.password", currentQueSuperUserPassword, roomtaken.password);
                 //return true;
             } else {
-
+                //ROOM DOSEN'T exists
+                createRoomDomVars.UrlRoom ="";
                 //return false;
                 window.history.pushState(location.pathname + "/index.html", "Title", location.pathname );
                 start();
@@ -89,6 +93,7 @@ function start() {
 }
 
 function SHOW_problems_addedProblems_deletedIds_SHOW() {
+    console.log("SHOW_problems_addedProblems_deletedIds_SHOW");
 
     //-----------Generates problemsWithoutDeleteditems whitch is problems + addedproblems - deletedproblems
     let problemsWithoutDeleteditems = {};
@@ -112,17 +117,9 @@ function SHOW_problems_addedProblems_deletedIds_SHOW() {
 
 }
 function dataGet(justAddedId){
-    //disableInsert();
-
-
-    //to find currentQueSuperUserPassword
-    
-
+    console.log("dataGet");
     runningProcesses++;
 
-    console.log("dataGet");
-    
-  
     fetch(dbUrl+"/problems" +"?metafields=true", {
         method: "get",
         headers: {
@@ -135,23 +132,19 @@ function dataGet(justAddedId){
         .then(e => {
             //only get current rooms problems
             problems = e.filter(element => element.room ===  getUrlVars()["room"]);
-            //document.querySelector("#loading").classList.add("hide");
-
-
-            //if superuserPassword exixts
             
             //hvis userid not in problems
             let myproblem = problems.filter(problem => problem._id == localStorage.getItem('user'))
-            console.log("userid : myproblem", localStorage.getItem('user'), myproblem.length);
+           // console.log("userid : myproblem", localStorage.getItem('user'), myproblem.length);
             if (myproblem.length < 1) {
+                //If I dont have problem in current room
                localStorage.removeItem("user");
             }
 
             disableInsert();
 
             runningProcesses--;
-            console.log("problems i dataGet, runningprocess", runningProcesses);
-            console.table(problems);
+         
             if (runningProcesses <= 0) {
                 deletedIds = [];
                 SHOW_problems_addedProblems_deletedIds_SHOW()
@@ -160,7 +153,7 @@ function dataGet(justAddedId){
         });
 }
 function dataInsert(body) {
-    //console.log("dataInsert", body);
+    console.log("dataInsert");
     runningProcesses++;
    
     closeDialog();
@@ -214,7 +207,7 @@ function dataInsert(body) {
         });
 }
 function dataUpdate(event, body,  idProblemOwner, idProblemHelper  ){
-    //console.log("dataUpdate: ", event,  body, updateId, deleteId);
+    console.log("dataUpdate");
     runningProcesses++;
 
     closeDialog();
@@ -292,6 +285,8 @@ function dataDelete(event, id) {
      
  }
 function dataProblemAddedOpdated(id, date, method, addedProblemsId ) {
+    console.log("dataProblemAddedOpdated");
+  
     //used to update a problem
     //function to keep track of added problems not in problems yet'
     runningProcesses++;
@@ -327,7 +322,7 @@ function dataProblemAddedOpdated(id, date, method, addedProblemsId ) {
 
 }
 function dropdownListChosenRow(event, idProblemHelper) {
-    console.log("dropdownListChosenRow", idProblemHelper);
+    console.log("dropdownListChosenRow");
     //This function sets what happens on change of dropdown
 
     document.querySelector("#problem  [data-content=name]").classList.add("disabled_textfield");
@@ -341,7 +336,7 @@ function dropdownListChosenRow(event, idProblemHelper) {
     //update button gets id from helper
     document.querySelector("#updateBtn").dataset.id = idProblemHelper;
     let chosen = problems.filter(problem => problem._id === idProblemHelper);
-    console.log("chosen: ", chosen)
+    //console.log("chosen: ", chosen)
 
     //content from helper is put in place
     document.querySelector("#problem  [data-content=name]").value = chosen[0].problem_owner;
@@ -353,7 +348,7 @@ function dropdownListChosenRow(event, idProblemHelper) {
 
 }
 function format(date) {
-   // console.log("date",date);
+    console.log("format");
 
     
 
@@ -371,6 +366,7 @@ function format(date) {
     return (1 + ((hours - 1) % 12)) + ":" + minutes.toString().padStart(2, "0") ;
 }
 function getUrlVars() {
+    console.log("getUrlVars");
     var vars = {};
     var parts = window.location.href.replace(/[?&]+([^=&]+)=([^&]*)/gi, function (m, key, value) {
         vars[key] = value;
@@ -378,6 +374,7 @@ function getUrlVars() {
     return vars;
 }
 function disableInsert() {
+    console.log("disableInsert");
     document.querySelector("#insertDialogShow").classList.add("disabled");
     document.querySelector("#insertDialogShow").removeEventListener("click", insertDialogShow);
 
@@ -392,7 +389,7 @@ function disableInsert() {
 ///------------------------------------DOM funktioner-----------------------------------------------
 
 function closeDialog() {
-    //console.log("dialogClose");
+    console.log("dialogClose");
 
     document.querySelector("#dialog").classList.add("hide");
 
@@ -401,7 +398,7 @@ function closeDialog() {
     document.querySelector(" [data-content=problem_long]").value = "";
 }
 function buildBodyFromForm() {
-    //console.log('insert');
+    console.log('buildBodyFromForm');
     if (mySuperUserPassword != "") {
         document.querySelector("#insertDialogShow").classList.remove("disabled");
         document.querySelector("#insertDialogShow").addEventListener("click", insertDialogShow)
@@ -417,7 +414,7 @@ function buildBodyFromForm() {
     problem_added = now.toISOString();
     //2 next lines updates my problem
     let body = { "problem_owner": problem_owner, "problem_short": problem_short, "problem_long": problem_long, "problem_added": problem_added };
-    console.log("buildBodyFromForm :body: ", body)
+   // console.log("buildBodyFromForm :body: ", body)
 
 
     dataInsert(body);
@@ -426,6 +423,7 @@ function buildBodyFromForm() {
 }
 
 function enableInsertDialogShow(){
+    console.log('enableInsertDialogShow');
     document.querySelector("#problem  [data-content=name]").disabled = false;
     document.querySelector("#problem  [data-content=problem_short]").disabled = false;
     document.querySelector("#problem  [data-content=problem_long]").disabled = false;
@@ -465,18 +463,14 @@ function insertDialogShow() {
    
 }
 function domDeleteRows(){
-    //console.log("deleteRow");
+    console.log("domDeleteRows");
   
-    //document.querySelector(`.id_${id}`).remove();
     document.querySelectorAll("tbody > tr:nth-child(n+2)").forEach(e => e.remove());
     document.querySelectorAll('#selections option:nth-child(n+2)').forEach(e => e.remove());
     
 }
 function domShowContent(problems) {
-    //console.log("showContent");
-    // document.querySelector("#dialog").classList.add("hide");
-    // document.querySelector("#delete").classList.add("hide");
-
+    console.log("domShowContent");
 
     let templateProblem = document.querySelector('#question');
     let templateDropdown = document.querySelector('#solved_by');
@@ -541,7 +535,7 @@ function domShowContent(problems) {
         // CHANGE dropdown SLUT
 
         function deleteDialogShow() {
-           // console.log('deleteDialogShow');
+            console.log('deleteDialogShow');
 
             //console.log("HER KOMMER ID", this.dataset.id);
              
@@ -579,7 +573,7 @@ function domShowContent(problems) {
         }
 
         function updateDialogShow() {
-            //console.log('deleteFromQueDialog');
+            console.log('updateDialogShow');
 
             //HIDE
             document.querySelector("#insertBtn").classList.add("hide");
@@ -660,7 +654,7 @@ createRoomDomVars.roomName.addEventListener("click", clearFieldRoom);
 createRoomDomVars.roomName.addEventListener("focusout", writeFieldRoom);
 
 function clearFieldRoom() {
-    console.log("clearField");
+    console.log("clearFieldRoom");
     if (createRoomDomVars.roomName.value === "Opret rum") {
         createRoomDomVars.roomName.value = "";
         // createRoom.roomName.removeEventListener("click", clearFieldRoom);   
@@ -699,15 +693,15 @@ function createRoomCheckBefore() {
 
     //check that both room and password is filled. Otherwise make them red
     if (createRoomDomVars.password.value === "Opret password" || createRoomDomVars.roomName.value === "Opret rum") {
-        console.log("either or");
+        //console.log("either or");
         if (createRoomDomVars.password.value === "Opret password") {
-            console.log("password not changed");
+            //console.log("password not changed");
             createRoomDomVars.password.classList.add("warning");
         } else {
             createRoomDomVars.password.classList.remove("warning");
         }
         if (createRoomDomVars.roomName.value === "Opret rum") {
-            console.log("room not changed");
+           // console.log("room not changed");
             createRoomDomVars.roomName.classList.add("warning");
 
         } else {
@@ -715,38 +709,34 @@ function createRoomCheckBefore() {
         }
 
     } else {
+        //both room and password is filled.
+        //console.log("else");
         createRoomDomVars.roomName.classList.remove("warning");
         createRoomDomVars.password.classList.remove("warning");
-        //checkRoomExists(createRoomDomVars.roomName.value);
+
+        let roomscheck = rooms.filter(room => room.roomname === createRoomDomVars.roomName.value )
 
 
-        dataCreateRoom();
-        // if (checkRoomExists(createRoomDomVars.roomName.value)){
-        //     console.log("RUMMET EXISTERER ALLEREDE");
+        if (roomscheck.length>0) {       //find ud af om rummet existerer
+            console.log("RUMMET EXISTERER ALLEREDE");
 
-        // } else {
-        //     dataCreateRoom();
-        //     console.log("RUMMET EXISTERER IKKE ALLEREDE");
-        // }
+        } else {
+            
+            console.log("RUMMET EXISTERER IKKE ALLEREDE");
+            //dataCreateRoom();
+            
+        }
 
     }
 
-
-
-
-
-    // if room dosent exist, make it
-    //put createRoomDomVars.roomName && createRoomDomVars.password in database
-
-    newUrlAndQr();
-
-
-   // roomIsSet();
+    newUrl();
+    newQr();
 
 }
 
 
 function dataCreateRoom() {
+    console.log("dataCreateRoom");
     // check that createRoomDomVars.roomName is not in database
     fetch(dbUrl + "/rooms", {
         method: "POST",
@@ -762,29 +752,28 @@ function dataCreateRoom() {
         json: true
     }).then(e => e.json())
         .then(e => {
-            console.log("room insertet");
+            //console.log("room insertet");
 
             //save superuserpassword in localstorrage
             localStorage.setItem("superuserPassword", createRoomDomVars.password.value);
-            checkRoomExists();
+            //checkRoomExists();
 
-            newUrlAndQr();
+
+
+            newUrl();
+            newQr();
             roomIsSet();
         })
 
 
 
 
-};
-
-function newUrlAndQr() {
-    newUrl();
-    newQr();
-    
 }
 
+
+
 function newUrl() {
-    console.log("newUrl", createRoomDomVars.password.value);
+    console.log("newUrl");
     //when done set localStorage superuserPassword and redirect to an url *?room=reateRoomDomVars.roomName
     
     
@@ -795,6 +784,7 @@ function newUrl() {
     createRoomDomVars.UrlRoom = getUrlVars()["room"];
 }
 function newQr() {//generate qr code
+    console.log("newQr");
     document.getElementById("qrcode").textContent = "";
 
     var qrcode = new QRCode(document.getElementById("qrcode"), {
@@ -812,16 +802,16 @@ function roomIsSet() {
     newQr();
 
     if (createRoomDomVars.UrlRoom != null) {
-        console.log("roomIsSet room is:", createRoomDomVars.UrlRoom)
+        //console.log("roomIsSet room is:", createRoomDomVars.UrlRoom)
         //disable create room
         createRoomDomVars.buttons.classList.add("hide");
         //unhide table
-        console.log("remove hide from que");
+        //console.log("remove hide from que");
         createRoomDomVars.que.classList.remove("hide");
         //hide table
     }
     else {
-        console.log("roomIsSet no room:")
+        //console.log("roomIsSet no room:")
         //enable create room
         setInterval(dataGet, 10000);
          createRoomDomVars.buttons.classList.remove("hide");
