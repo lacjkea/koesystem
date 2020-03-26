@@ -690,6 +690,8 @@ function dataCreateRoom() {
 
     document.querySelector("#loading").classList.remove("hide");
 
+    
+
     fetch(dbUrl + "/rooms", {
         method: "POST",
         headers: {
@@ -698,7 +700,7 @@ function dataCreateRoom() {
             "cache-control": "no-cache"
         },
         body: JSON.stringify({
-            "roomname": domData.roomName.value,
+            "roomname": encodeURI(domData.roomName.value),
             "password": domData.password.value
         }),
         json: true
@@ -921,7 +923,8 @@ function roomCheck(e){
 
         document.querySelector("#room_password").classList.add("disabled_textfield");
         document.querySelector("#room_password").disabled = true;
-        document.querySelector("#room_password").value = ""
+        document.querySelector("#room_password").value = "";
+        document.querySelector("#room_password").placeholder = "";
 
 
         
@@ -972,10 +975,14 @@ function roomCheck(e){
 function createRoom(){
     //document.querySelector("#createRoomBtn").removeEventListener("click", createRoom);
     document.querySelector("#room_password").oninput = createRoom;
+    
+
     if (document.querySelector("#room_password").value != "") {
         document.querySelector("#createRoomBtn").classList.remove("disabled");
         document.querySelector("#createRoomBtn").disabled = false;
-        document.querySelector("#createRoomBtn").addEventListener("click", dataCreateRoom);
+
+        //document.querySelector("#createRoomBtn").addEventListener("click", dataCreateRoom);
+        dataCreateRoom();
     } else {
         document.querySelector("#room_password").classList.add("warning");
         document.querySelector("#createRoomBtn").classList.add("disabled");
