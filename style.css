@@ -132,7 +132,8 @@ textarea {
   text-decoration: none;
   /* text-shadow: 0px 1px 0px #5b8a3c; */
   text-shadow: 0px 1px 0px grey;
-  width: 18ch;
+  /* width: 18ch; */
+  width: 140px;
 }
 
 .myButton:hover {
@@ -151,14 +152,16 @@ textarea {
 .normal {
   background-color: var(--button-normal-color);
   text-shadow: 0px 1px 0px grey;
-  width: 8ch;
+  /* width: 8ch; */
+  width: 70px;
 }
 
 .disabled {
   background-color: var(--button-disabled-color);
   text-shadow: 0px 1px 0px grey;
   color: --button-normal-color;
-  width: 18ch;
+  /* width: 18ch; */
+  width: 140px;
 }
 
 #createroomButtonBox {
