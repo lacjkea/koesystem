@@ -11,15 +11,29 @@ body {
   padding: 0;
 }
 
+#logo {
+}
+
+#logo img {
+  width: 100%;
+  max-width: 140px;
+}
+
 header {
   display: flex;
+  flex-wrap: wrap;
   justify-content: space-between;
   padding: 20px;
   background-color: lightgrey;
 }
+
 header #createroom {
   text-align: right;
   width: 40ch;
+}
+
+header div {
+  flex-grow: 1;
 }
 
 #loading img {
@@ -31,7 +45,7 @@ header #createroom {
 }
 
 #qrcode {
-  text-align: center;
+  flex-grow: 0;
   /* padding: 0 20px 20px 0; */
 }
 
