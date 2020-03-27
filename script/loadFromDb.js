@@ -92,6 +92,9 @@ function checkRoomExists() {
 };
 function start() {
     console.log('start');
+   
+    //document.querySelector("#inputRoom").addEventListener('input', roomCheck);
+
     
     // document.querySelector("#gotoRoomBtn").classList.add("disabled");
     // document.querySelector("#gotoRoomBtn").disabled = true;
@@ -101,10 +104,13 @@ function start() {
     // document.querySelector("#adminRoomBtn").disabled = true;
 
 
+    document.querySelector("#inputRoom").oninput = sendValue;
 
-
-
-    document.querySelector("#inputRoom").oninput = roomCheck;
+    function sendValue(e){
+        roomCheck(e.target.value);
+    }
+ 
+    //document.querySelector("#inputRoom").addEventListener("mouseleave", roomCheck);
     tempId =1;
     //getUrlVars();
        
@@ -815,13 +821,21 @@ function autocomplete(inp, arr) {
                 b.innerHTML += "<input type='hidden' value='" + arr[i] + "'>";
                 /*execute a function when someone clicks on the item value (DIV element):*/
                 b.addEventListener("click", function (e) {
+                    
                     /*insert the value for the autocomplete text field:*/
                     inp.value = this.getElementsByTagName("input")[0].value;
                     /*close the list of autocompleted values,
                     (or any other open lists of autocompleted values:*/
+                    
                     closeAllLists();
+                    
+                    //alert(`${this.getElementsByTagName("input")[0].value}`);
+                    roomCheck(this.getElementsByTagName("input")[0].value);
+                    
+               
                 });
                 a.appendChild(b);
+                
             }
         }
     });
@@ -852,9 +866,11 @@ function autocomplete(inp, arr) {
                 /*and simulate a click on the "active" item:*/
                 if (x) x[currentFocus].click();
             }
-            roomCheck(e);
+            roomCheck(e.target.value);
         }
     });
+
+
     function addActive(x) {
         /*a function to classify an item as "active":*/
         if (!x) return false;
@@ -884,6 +900,8 @@ function autocomplete(inp, arr) {
     /*execute a function when someone clicks in the document:*/
     document.addEventListener("click", function (e) {
         closeAllLists(e.target);
+       
+      
     });
 }
 
@@ -891,14 +909,15 @@ function autocomplete(inp, arr) {
 //var countries = ["Afghanistan", "Albania", "Algeria", "Andorra", "Angola", "Anguilla", "Antigua & Barbuda", "Argentina", "Armenia", "Aruba", "Australia", "Austria", "Azerbaijan", "Bahamas", "Bahrain", "Bangladesh", "Barbados", "Belarus", "Belgium", "Belize", "Benin", "Bermuda", "Bhutan", "Bolivia", "Bosnia & Herzegovina", "Botswana", "Brazil", "British Virgin Islands", "Brunei", "Bulgaria", "Burkina Faso", "Burundi", "Cambodia", "Cameroon", "Canada", "Cape Verde", "Cayman Islands", "Central Arfrican Republic", "Chad", "Chile", "China", "Colombia", "Congo", "Cook Islands", "Costa Rica", "Cote D Ivoire", "Croatia", "Cuba", "Curacao", "Cyprus", "Czech Republic", "Denmark", "Djibouti", "Dominica", "Dominican Republic", "Ecuador", "Egypt", "El Salvador", "Equatorial Guinea", "Eritrea", "Estonia", "Ethiopia", "Falkland Islands", "Faroe Islands", "Fiji", "Finland", "France", "French Polynesia", "French West Indies", "Gabon", "Gambia", "Georgia", "Germany", "Ghana", "Gibraltar", "Greece", "Greenland", "Grenada", "Guam", "Guatemala", "Guernsey", "Guinea", "Guinea Bissau", "Guyana", "Haiti", "Honduras", "Hong Kong", "Hungary", "Iceland", "India", "Indonesia", "Iran", "Iraq", "Ireland", "Isle of Man", "Israel", "Italy", "Jamaica", "Japan", "Jersey", "Jordan", "Kazakhstan", "Kenya", "Kiribati", "Kosovo", "Kuwait", "Kyrgyzstan", "Laos", "Latvia", "Lebanon", "Lesotho", "Liberia", "Libya", "Liechtenstein", "Lithuania", "Luxembourg", "Macau", "Macedonia", "Madagascar", "Malawi", "Malaysia", "Maldives", "Mali", "Malta", "Marshall Islands", "Mauritania", "Mauritius", "Mexico", "Micronesia", "Moldova", "Monaco", "Mongolia", "Montenegro", "Montserrat", "Morocco", "Mozambique", "Myanmar", "Namibia", "Nauro", "Nepal", "Netherlands", "Netherlands Antilles", "New Caledonia", "New Zealand", "Nicaragua", "Niger", "Nigeria", "North Korea", "Norway", "Oman", "Pakistan", "Palau", "Palestine", "Panama", "Papua New Guinea", "Paraguay", "Peru", "Philippines", "Poland", "Portugal", "Puerto Rico", "Qatar", "Reunion", "Romania", "Russia", "Rwanda", "Saint Pierre & Miquelon", "Samoa", "San Marino", "Sao Tome and Principe", "Saudi Arabia", "Senegal", "Serbia", "Seychelles", "Sierra Leone", "Singapore", "Slovakia", "Slovenia", "Solomon Islands", "Somalia", "South Africa", "South Korea", "South Sudan", "Spain", "Sri Lanka", "St Kitts & Nevis", "St Lucia", "St Vincent", "Sudan", "Suriname", "Swaziland", "Sweden", "Switzerland", "Syria", "Taiwan", "Tajikistan", "Tanzania", "Thailand", "Timor L'Este", "Togo", "Tonga", "Trinidad & Tobago", "Tunisia", "Turkey", "Turkmenistan", "Turks & Caicos", "Tuvalu", "Uganda", "Ukraine", "United Arab Emirates", "United Kingdom", "United States of America", "Uruguay", "Uzbekistan", "Vanuatu", "Vatican City", "Venezuela", "Vietnam", "Virgin Islands (US)", "Yemen", "Zambia", "Zimbabwe"];
 
 function roomCheck(e){
+    //alert(e);
     document.querySelector("#adminRoomBtn").classList.add("disabled");
     document.querySelector("#adminRoomBtn").disabled = true;
     
     let myRooms = rooms.map(room => room.roomname);
     
-    console.log("e.value)", e.target.value);
+    //console.log("e.value)", e.target.value);
     //check if dropdown of exixting rooms is gone
-    if (myRooms.includes(e.target.value)){
+    if (myRooms.includes(e)){
 
 
         //then we have an exixting room
@@ -973,16 +992,17 @@ function roomCheck(e){
 }
 
 function createRoom(){
-    //document.querySelector("#createRoomBtn").removeEventListener("click", createRoom);
+    document.querySelector("#createRoomBtn").removeEventListener("click", createRoom);
     document.querySelector("#room_password").oninput = createRoom;
     
 
     if (document.querySelector("#room_password").value != "") {
+        document.querySelector("#createRoomBtn").addEventListener("click", createRoom);
         document.querySelector("#createRoomBtn").classList.remove("disabled");
         document.querySelector("#createRoomBtn").disabled = false;
 
-        //document.querySelector("#createRoomBtn").addEventListener("click", dataCreateRoom);
-        dataCreateRoom();
+        document.querySelector("#createRoomBtn").addEventListener("click", dataCreateRoom);
+        //dataCreateRoom();
     } else {
         document.querySelector("#room_password").classList.add("warning");
         document.querySelector("#createRoomBtn").classList.add("disabled");
